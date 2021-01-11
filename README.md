@@ -6,7 +6,7 @@ Link to Project Proposal:
 
 **Links to APIs:**
 
-*Note: I'm currently using RapidAPI to get search for and get access to most of the APIs*
+*Note: I'm currently using RapidAPI to search for and get access to most of the APIs*
 
 [Netflix API](https://unogs.com/)<br>
 [IMDB API](https://rapidapi.com/amrelrafie/api/movies-tvshows-data-imdb/details)<br>
