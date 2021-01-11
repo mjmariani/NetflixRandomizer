@@ -1,0 +1,193 @@
+CREATE TABLE "Users" (
+  "user_id" SERIAL UNIQUE PRIMARY KEY,
+  "first_name" text,
+  "last_name" text,
+  "created_at" timestamp,
+  "country_code" int,
+  "region_code" int,
+  "state_code" int,
+  "province_code" int,
+  "city_code" int,
+  "auth_id" int NOT NULL,
+  "email" varchar,
+  "gender_id" int NOT NULL,
+  "details" text,
+  "confirmation_cod" text NOT NULL,
+  "confirmation_time" timestamp,
+  "genres_liked_id" int
+);
+
+CREATE TABLE "Authentication" (
+  "auth_id" int UNIQUE PRIMARY KEY,
+  "username" text NOT NULL,
+  "password" text NOT NULL,
+  "created_at" timestamp NOT NULL,
+  "city_id" int
+);
+
+CREATE TABLE "Country" (
+  "id" int UNIQUE PRIMARY KEY,
+  "name" text NOT NULL,
+  "city_id" int,
+  "region_id" int,
+  "state_id" int,
+  "province_id" int
+);
+
+CREATE TABLE "City" (
+  "id" int UNIQUE PRIMARY KEY,
+  "name" text NOT NULL
+);
+
+CREATE TABLE "Region" (
+  "id" int UNIQUE PRIMARY KEY,
+  "name" text NOT NULL
+);
+
+CREATE TABLE "State" (
+  "id" int UNIQUE PRIMARY KEY,
+  "name" text NOT NULL
+);
+
+CREATE TABLE "Province" (
+  "id" int UNIQUE PRIMARY KEY,
+  "name" text NOT NULL
+);
+
+CREATE TABLE "Movies" (
+  "movie_id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text,
+  "details" text,
+  "date_released" date,
+  "runtime" int
+);
+
+CREATE TABLE "TV_Shows" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text,
+  "details" text,
+  "date_released" date,
+  "runtime_total" int,
+  "num_of_episodes" int
+);
+
+CREATE TABLE "TV_Series_Episodes" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text,
+  "details" text,
+  "date_released" date,
+  "runtime_total" int,
+  "tv_series_id" int NOT NULL
+);
+
+CREATE TABLE "Likes" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "user_id" int,
+  "movie_id" int,
+  "tv_show_id" int,
+  "tv_show_watched_id" id,
+  "movie_watched_id" id
+);
+
+CREATE TABLE "User_Photos" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "image" image,
+  "user_id" int NOT NULL
+);
+
+CREATE TABLE "User_Social_Networks" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text,
+  "social_network_id" int NOT NULL,
+  "user_id" int NOT NULL
+);
+
+CREATE TABLE "Social_Networks" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text NOT NULL,
+  "url" text NOT NULL,
+  "details" text
+);
+
+CREATE TABLE "Genres" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "name" text NOT NULL,
+  "details" text
+);
+
+CREATE TABLE "Recommendations" (
+  "id" SERIAL PRIMARY KEY,
+  "user_id" int NOT NULL,
+  "movie_id" int,
+  "tv_show_id" int,
+  "user_rejected" boolean NOT NULL,
+  "user_accepted" boolean NOT NULL
+);
+
+CREATE TABLE "User_Movie_Watched" (
+  "id" SERIAL PRIMARY KEY,
+  "user_id" int NOT NULL,
+  "movie_id" int,
+  "watched" boolean
+);
+
+CREATE TABLE "User_TVShow_Watched" (
+  "id" SERIAL PRIMARY KEY,
+  "user_id" int NOT NULL,
+  "tv_show_id" int,
+  "watched" boolean
+);
+
+ALTER TABLE "Users" ADD FOREIGN KEY ("genres_liked_id") REFERENCES "Genres" ("id");
+
+ALTER TABLE "Authentication" ADD FOREIGN KEY ("auth_id") REFERENCES "Users" ("auth_id");
+
+ALTER TABLE "Authentication" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("id");
+
+ALTER TABLE "Country" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("id");
+
+ALTER TABLE "Country" ADD FOREIGN KEY ("region_id") REFERENCES "Region" ("id");
+
+ALTER TABLE "Country" ADD FOREIGN KEY ("state_id") REFERENCES "State" ("id");
+
+ALTER TABLE "Country" ADD FOREIGN KEY ("province_id") REFERENCES "Province" ("id");
+
+ALTER TABLE "TV_Series_Episodes" ADD FOREIGN KEY ("tv_series_id") REFERENCES "TV_Shows" ("id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("tv_show_watched_id") REFERENCES "User_TVShow_Watched" ("id");
+
+ALTER TABLE "Likes" ADD FOREIGN KEY ("movie_watched_id") REFERENCES "User_Movie_Watched" ("id");
+
+ALTER TABLE "User_Photos" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("name") REFERENCES "Social_Networks" ("name");
+
+ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("social_network_id") REFERENCES "Social_Networks" ("id");
+
+ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "Recommendations" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "Recommendations" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
+
+ALTER TABLE "Recommendations" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
+
+ALTER TABLE "User_Movie_Watched" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "User_Movie_Watched" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
+
+ALTER TABLE "User_TVShow_Watched" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "User_TVShow_Watched" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
+
+COMMENT ON COLUMN "Authentication"."created_at" IS 'when pasword and username created';
+
+COMMENT ON COLUMN "Recommendations"."user_rejected" IS 'user rejected recommendations';
+
+COMMENT ON COLUMN "Recommendations"."user_accepted" IS 'user liked recommendations';
