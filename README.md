@@ -16,3 +16,5 @@ Link to Project Proposal:
 [Facebook APIs: Social Plugins](https://developers.facebook.com/products/social-plugins/)<br>
 [Facebook APIs:Sharing](https://developers.facebook.com/products/sharing-to-stories/)<br>
 [Facebook APIs:Social Media Integrations](https://developers.facebook.com/products/#filter-id=social-integrations)
+[Get Metacritic Score](https://rapidapi.com/apidojo/api/imdb8)
+[Rotten Tomatoes API](https://developer.fandango.com/)
