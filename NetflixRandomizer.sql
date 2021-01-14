@@ -71,22 +71,14 @@ CREATE TABLE "TV_Shows" (
   "num_of_episodes" int
 );
 
-CREATE TABLE "TV_Series_Episodes" (
-  "id" SERIAL PRIMARY KEY NOT NULL,
-  "name" text,
-  "details" text,
-  "date_released" date,
-  "runtime_total" int,
-  "tv_series_id" int NOT NULL
-);
-
 CREATE TABLE "Likes" (
   "id" SERIAL PRIMARY KEY NOT NULL,
   "user_id" int,
   "movie_id" int,
   "tv_show_id" int,
   "tv_show_watched_id" id,
-  "movie_watched_id" id
+  "movie_watched_id" id,
+  "date_liked" timestamp
 );
 
 CREATE TABLE "User_Photos" (
@@ -97,7 +89,6 @@ CREATE TABLE "User_Photos" (
 
 CREATE TABLE "User_Social_Networks" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "name" text,
   "social_network_id" int NOT NULL,
   "user_id" int NOT NULL
 );
@@ -115,27 +106,18 @@ CREATE TABLE "Genres" (
   "details" text
 );
 
-CREATE TABLE "Recommendations" (
-  "id" SERIAL PRIMARY KEY,
-  "user_id" int NOT NULL,
-  "movie_id" int,
-  "tv_show_id" int,
-  "user_rejected" boolean NOT NULL,
-  "user_accepted" boolean NOT NULL
-);
-
 CREATE TABLE "User_Movie_Watched" (
   "id" SERIAL PRIMARY KEY,
   "user_id" int NOT NULL,
   "movie_id" int,
-  "watched" boolean
+  "watched" boolean DEFAULT False
 );
 
 CREATE TABLE "User_TVShow_Watched" (
   "id" SERIAL PRIMARY KEY,
   "user_id" int NOT NULL,
   "tv_show_id" int,
-  "watched" boolean
+  "watched" boolean DEFAULT False
 );
 
 ALTER TABLE "Users" ADD FOREIGN KEY ("genres_liked_id") REFERENCES "Genres" ("id");
@@ -152,8 +134,6 @@ ALTER TABLE "Country" ADD FOREIGN KEY ("state_id") REFERENCES "State" ("id");
 
 ALTER TABLE "Country" ADD FOREIGN KEY ("province_id") REFERENCES "Province" ("id");
 
-ALTER TABLE "TV_Series_Episodes" ADD FOREIGN KEY ("tv_series_id") REFERENCES "TV_Shows" ("id");
-
 ALTER TABLE "Likes" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
 
 ALTER TABLE "Likes" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
@@ -166,17 +146,9 @@ ALTER TABLE "Likes" ADD FOREIGN KEY ("movie_watched_id") REFERENCES "User_Movie_
 
 ALTER TABLE "User_Photos" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
 
-ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("name") REFERENCES "Social_Networks" ("name");
-
 ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("social_network_id") REFERENCES "Social_Networks" ("id");
 
 ALTER TABLE "User_Social_Networks" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
-
-ALTER TABLE "Recommendations" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
-
-ALTER TABLE "Recommendations" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
-
-ALTER TABLE "Recommendations" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
 
 ALTER TABLE "User_Movie_Watched" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
 
@@ -187,7 +159,3 @@ ALTER TABLE "User_TVShow_Watched" ADD FOREIGN KEY ("user_id") REFERENCES "Users"
 ALTER TABLE "User_TVShow_Watched" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
 
 COMMENT ON COLUMN "Authentication"."created_at" IS 'when pasword and username created';
-
-COMMENT ON COLUMN "Recommendations"."user_rejected" IS 'user rejected recommendations';
-
-COMMENT ON COLUMN "Recommendations"."user_accepted" IS 'user liked recommendations';
