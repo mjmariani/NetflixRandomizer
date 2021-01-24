@@ -12,7 +12,7 @@ CREATE TABLE "Users" (
   "email" varchar,
   "gender_id" int NOT NULL,
   "details" text,
-  "confirmation_cod" text NOT NULL,
+  "confirmation_code" text NOT NULL,
   "confirmation_time" timestamp,
   "genres_liked_id" int
 );
