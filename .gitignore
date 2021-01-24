@@ -1,3 +1,9 @@
 __pycache__/
 
 venv/
+Lib/
+Scripts/
+Include/
+share/
+*.cfg
+*.docx
