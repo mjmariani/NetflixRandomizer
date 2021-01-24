@@ -73,12 +73,19 @@ CREATE TABLE "TV_Shows" (
 
 CREATE TABLE "Recommendation" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "user_id" int,
+  "user_id" int NOT NULL,
   "movie_id" int,
   "tv_show_id" int,
   "watched" boolean DEFAULT false,
   "liked" boolean DEFAULT null,
   "date_liked" timestamp
+);
+
+CREATE TABLE "Queue" (
+  "id" SERIAL PRIMARY KEY NOT NULL,
+  "user_id" int NOT NULL,
+  "movie_id" int,
+  "tv_show_id" int
 );
 
 CREATE TABLE "User_Photos" (
@@ -137,6 +144,12 @@ ALTER TABLE "Recommendation" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("us
 ALTER TABLE "Recommendation" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
 
 ALTER TABLE "Recommendation" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
+
+ALTER TABLE "Queue" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
+
+ALTER TABLE "Queue" ADD FOREIGN KEY ("movie_id") REFERENCES "Movies" ("movie_id");
+
+ALTER TABLE "Queue" ADD FOREIGN KEY ("tv_show_id") REFERENCES "TV_Shows" ("id");
 
 ALTER TABLE "User_Photos" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
 
