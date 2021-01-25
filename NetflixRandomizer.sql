@@ -1,7 +1,7 @@
 CREATE TABLE "Users" (
   "user_id" SERIAL UNIQUE PRIMARY KEY,
-  "first_name" string,
-  "last_name" string,
+  "first_name" text,
+  "last_name" text,
   "created_at" timestamp,
   "country_code" int,
   "region_code" int,
@@ -11,24 +11,24 @@ CREATE TABLE "Users" (
   "auth_id" int NOT NULL,
   "email" varchar,
   "gender_id" int NOT NULL,
-  "details" string,
-  "confirmation_code" string NOT NULL,
+  "details" text,
+  "confirmation_code" text NOT NULL,
   "confirmation_time" timestamp,
   "genres_liked_id" int
 );
 
 CREATE TABLE "Authentication" (
   "auth_id" int UNIQUE PRIMARY KEY,
-  "username" string NOT NULL,
-  "password_hash" string NOT NULL,
-  "password_salt" string NOT NULL,
+  "username" text NOT NULL,
+  "password_hash" text NOT NULL,
+  "password_salt" text NOT NULL,
   "created_at" timestamp NOT NULL,
   "city_id" int
 );
 
 CREATE TABLE "Country" (
   "id" int UNIQUE PRIMARY KEY,
-  "name" string NOT NULL,
+  "name" text NOT NULL,
   "city_id" int,
   "region_id" int,
   "state_id" int,
@@ -37,36 +37,36 @@ CREATE TABLE "Country" (
 
 CREATE TABLE "City" (
   "id" int UNIQUE PRIMARY KEY,
-  "name" string NOT NULL
+  "name" text NOT NULL
 );
 
 CREATE TABLE "Region" (
   "id" int UNIQUE PRIMARY KEY,
-  "name" string NOT NULL
+  "name" text NOT NULL
 );
 
 CREATE TABLE "State" (
   "id" int UNIQUE PRIMARY KEY,
-  "name" string NOT NULL
+  "name" text NOT NULL
 );
 
 CREATE TABLE "Province" (
   "id" int UNIQUE PRIMARY KEY,
-  "name" string NOT NULL
+  "name" text NOT NULL
 );
 
 CREATE TABLE "Movies" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "name" string,
-  "API_used" string NOT NULL,
-  "API_id" string NOT NULL
+  "name" text,
+  "API_used" text NOT NULL,
+  "API_id" text NOT NULL
 );
 
 CREATE TABLE "TV_Shows" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "name" string,
-  "API_used" string NOT NULL,
-  "API_id" string NOT NULL
+  "name" text,
+  "API_used" text NOT NULL,
+  "API_id" text NOT NULL
 );
 
 CREATE TABLE "Queue" (
@@ -78,14 +78,14 @@ CREATE TABLE "Queue" (
 
 CREATE TABLE "User_Photos" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "image" image,
+  "image" bytea,
   "user_id" int NOT NULL
 );
 
 CREATE TABLE "Genres" (
   "id" SERIAL PRIMARY KEY NOT NULL,
-  "name" string NOT NULL,
-  "details" string
+  "name" text NOT NULL,
+  "details" text
 );
 
 CREATE TABLE "Friends" (
@@ -105,9 +105,9 @@ CREATE TABLE "Likes" (
   "date_liked" timestamp NOT NULL
 );
 
-ALTER TABLE "Users" ADD FOREIGN KEY ("genres_liked_id") REFERENCES "Genres" ("id");
+ALTER TABLE "Users" ADD FOREIGN KEY ("auth_id") REFERENCES "Authentication" ("auth_id");
 
-ALTER TABLE "Authentication" ADD FOREIGN KEY ("auth_id") REFERENCES "Users" ("auth_id");
+ALTER TABLE "Users" ADD FOREIGN KEY ("genres_liked_id") REFERENCES "Genres" ("id");
 
 ALTER TABLE "Authentication" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("id");
 
