@@ -8,7 +8,6 @@ CREATE TABLE "Users" (
   "state_code" int,
   "province_code" int,
   "city_code" int,
-  "auth_id" int NOT NULL,
   "email" varchar,
   "gender_id" int NOT NULL,
   "details" text,
@@ -23,7 +22,7 @@ CREATE TABLE "Authentication" (
   "password_hash" text NOT NULL,
   "password_salt" text NOT NULL,
   "created_at" timestamp NOT NULL,
-  "city_id" int
+  "user_id" int
 );
 
 CREATE TABLE "Country" (
@@ -105,11 +104,17 @@ CREATE TABLE "Likes" (
   "date_liked" timestamp NOT NULL
 );
 
-ALTER TABLE "Users" ADD FOREIGN KEY ("auth_id") REFERENCES "Authentication" ("auth_id");
+ALTER TABLE "Country" ADD FOREIGN KEY ("id") REFERENCES "Users" ("country_code");
+
+ALTER TABLE "Region" ADD FOREIGN KEY ("id") REFERENCES "Users" ("region_code");
+
+ALTER TABLE "State" ADD FOREIGN KEY ("id") REFERENCES "Users" ("state_code");
+
+ALTER TABLE "Province" ADD FOREIGN KEY ("id") REFERENCES "Users" ("province_code");
 
 ALTER TABLE "Users" ADD FOREIGN KEY ("genres_liked_id") REFERENCES "Genres" ("id");
 
-ALTER TABLE "Authentication" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("id");
+ALTER TABLE "Authentication" ADD FOREIGN KEY ("user_id") REFERENCES "Users" ("user_id");
 
 ALTER TABLE "Country" ADD FOREIGN KEY ("city_id") REFERENCES "City" ("id");
 

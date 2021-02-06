@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="row mt-4 text-center mx-auto" id="info-tab">
+    <div class="col-4">
+      <div class="list-group" id="list-tab" role="tablist">
+        <a class="list-group-item list-group-item-action active" id="list-home-list" data-toggle="list" href="#list-home" role="tab" aria-controls="home">About</a>
+        <a class="list-group-item list-group-item-action" id="list-profile-list" data-toggle="list" href="#list-profile" role="tab" aria-controls="profile">API Data</a>
+        <a class="list-group-item list-group-item-action" id="list-messages-list" data-toggle="list" href="#list-messages" role="tab" aria-controls="messages">How to Use</a>
+        <a class="list-group-item list-group-item-action" id="list-settings-list" data-toggle="list" href="#list-settings" role="tab" aria-controls="settings">FAQs</a>
+      </div>
+    </div>
+    <div class="col-8">
+      <div class="tab-content" id="nav-tabContent">
+        <div class="tab-pane fade show active" id="list-home" role="tabpanel" aria-labelledby="list-home-list">The preliminary goal of my website will be to create a project which shows off all of the skills and technologies I have been learning thus far. 
+            Hopefully, I can create a foundation to which I can use to grow a more complex website should I decide to pursue this idea further. However, the main and ultimate goal, in terms of its audience, will be to create a place where one can go and be 
+            suggested movies, tv shows or other entertainment in a fun manner while being able to enjoy the suggested movies with others. 
+            Another extension of this goal includes being able to have people meet new people based on their likes with respect to movies or tv shows. </div>
+        <div class="tab-pane fade" id="list-profile" role="tabpanel" aria-labelledby="list-profile-list">In terms of data, I will be primarily using movie and tv show information through the unofficial Netflix API, uNoGS. 
+            I’m choosing this API as I have just found out that Netflix ended their support for a public API. 
+            The website will also be using the IMDB API to pull ratings and other data.</div>
+        <div class="tab-pane fade" id="list-messages" role="tabpanel" aria-labelledby="list-messages-list">1. Click Sign Up and create an account
+            2. Then click Randomizer, once logged in and go ahead and start liking or disliking movie suggestions.
+            3. Any movie/tv show that you like, will be added to your queue to watch at any time.
+            4. Once watched, you can mark it as watched and continue using the Randomizer to get another movie/tv show selection.
+            5. Also, go ahead and add people to your friends list by searching for their username. Wait for them to accept friend request.
+            6. Once you're friends with someone
+        </div>
+        </div>
+        <div class="tab-pane fade" id="list-settings" role="tabpanel" aria-labelledby="list-settings-list">...</div>
+      </div>
+    </div>
+  </div>
+
+  {% endblock %}
