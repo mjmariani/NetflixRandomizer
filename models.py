@@ -268,7 +268,7 @@ class User_Photos(db.Model):
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
     
-    image_url = db.Column(db.Text, nullable=True)
+    image_url = db.Column(db.Text, nullable=True, default="/static/images/default-pic.png")
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     

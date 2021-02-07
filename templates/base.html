@@ -33,7 +33,7 @@
             <div class="collapse navbar-collapse" id="navbarText">
                 <ul class="navbar-nav mr-auto">
                     <li class="nav-item active">
-                        <a class="nav-link" href="#">Home <span class="sr-only">(current)</span></a>
+                        <a class="nav-link" href="/home">Home <span class="sr-only">(current)</span></a>
 
                     </li>
                     {%if not g.user %}
@@ -52,7 +52,7 @@
 
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="/details">Queue</a>
+                        <a class="nav-link" href="/users/{{g.user}}">Queue</a>
 
                     </li>
                     <li class="nav-item">
@@ -92,9 +92,11 @@
               </button>
             </div>
             <div class="modal-body">
-              {%for name in g.user.pending_friends_request.name %}
+              {%for friend in pending_friends_request %}
               <div>
-              <ul>{{name}}</ul><img src="{{user.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px"><button>Accept</button><button>Reject</button>
+              <ul>{{friend}}</ul><img src="{{user.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
+              <form action="/add_friend/{{friend.user_id}}" method="post"><button type="submit">Accept</button></form>
+              <form method="post" action="/delete_friend_request/{{friend.user_id}}><button type="submit">Reject</button></form>
             </div>
             {%endfor%}
             </div>
