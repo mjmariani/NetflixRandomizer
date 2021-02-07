@@ -10,7 +10,8 @@ class SignupForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     email = StringField('E-mail', validators=[DataRequired(), Email()])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    image_url = StringField('(Optional) Image URL')
+    image_url = StringField('Image URL')
+    ##submit = SubmitButton('Sign Up')
     ##recaptcha = RecaptchaField()
     
 class UserEditForm(FlaskForm):
@@ -29,12 +30,14 @@ class UserEditForm(FlaskForm):
     gender = SelectField('(Optional) Gender', choices=[('male', 'male'),('female','female'),('other','other')])
     details = TextAreaField('(Optional) details')
     password = PasswordField('Password', validators=[Length(min=6)])
+    ##submit = SubmitButton('Save Changes')
     
 class LoginForm(FlaskForm):
     """Login form."""
     
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
+    ##submit = SubmitButton('Login')
 
 
 class GenresLikedEditForm(FlaskForm):

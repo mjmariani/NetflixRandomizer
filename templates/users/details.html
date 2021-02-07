@@ -2,7 +2,15 @@
 {% block content %}
 
 ##includes user's info, queue and friend list
-
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes class="alert alert-success" role="alert">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
 ###Layout source: https://bbbootstrap.com/snippets/full-screen/individual-user-profile-social-network-94176986
 <div class="bg-white shadow rounded overflow-hidden">
     <div class="px-4 pt-0 pb-4 cover">

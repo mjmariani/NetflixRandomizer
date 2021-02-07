@@ -7,130 +7,21 @@ from flask_sqlalchemy import SQLAlchemy
 bcrypt = Bcrypt()
 db = SQLAlchemy()
 
-
-class Users(db.Model):
-    """User in the system."""
+class Friends(db.Model):
+    """To keep track of user's relationship with other users"""
     
-    __tablename__ = 'users'
+    __tablename__ = 'friends'
     __table_args__ = {'extend_existing': True}
     
-    user_id = db.Column(db.Integer, primary_key=True, 
-                   nullable=False, unique=True, 
-                   autoincrement=True)
+    id = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True, unique=True)
     
-    first_name = db.Column(db.String(), nullable=True)
+    user_id_1 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
     
-    last_name = db.Column(db.String(), nullable=True)
+    user_id_2 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
     
-    created_at = db.Column(db.DateTime, nullable=False, 
+    date_start = db.Column(db.DateTime, nullable=True, 
                            default=datetime.utcnow())
     
-    country_code = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=True)
-    
-    region_code = db.Column(db.Integer, db.ForeignKey('region.id', ondelete='CASCADE'), nullable=True)
-    
-    state_code = db.Column(db.Integer, db.ForeignKey('state.id', ondelete='CASCADE'), nullable=True)
-    
-    province_code = db.Column(db.Integer, db.ForeignKey('province.id', ondelete='CASCADE'), nullable=True)
-    
-    city_code = db.Column(db.Integer, db.ForeignKey('city.id', ondelete='CASCADE'), nullable=True)
-    
-    ##auth_id = db.Column(db.Integer, db.ForeignKey('auth.auth_id'), nullable=False, ondelete='cascade')
-    
-    email = db.Column(db.String(), nullable=True)
-    
-    
-    gender_id = db.Column(db.Integer, nullable=True)
-    
-    details = db.Column(db.Text, nullable=True)
-    
-    ##confirmation_code = db.Column(db.String(), nullable=False)
-    
-    ##confirmation_time = db.Column(db.DateTime, default=datetime.utcnow())
-    
-    
-    ##Using the 'likes' table as an intermediary table between the users and liked shows/movies
-    
-    tv_show_likes = db.relationship('TV_Shows', secondary='likes', back_populates="users", cascade="all, delete")
-    
-    movie_likes = db.relationship('Movies', secondary='likes', back_populates="users", cascade="all, delete")
-    
-    ##Using the 'friends' table as an intermediary table between the users who are friends with each other
-    
-    friends = db.relationship("Users", secondary='friends', back_populates="users", cascade="all, delete")
-    
-    credentials = db.relationship("Authentication", back_populates="users", cascade="all, delete")
-    
-    user_photo = db.relationship("User_Photos", back_populates="users", cascade="all, delete")
-    
-    genres_liked = db.relationship("Genres", secondary="liked_genres", back_populates="users", cascade="all, delete")
-    
-    pending_friends_request = db.relationship("Users", secondary="pending_friend_requests", cascade="all, delete")
-    
-    def __repr__(self):
-        return f"<User #{self.user_id}: {self.credentials.username}, {self.email}>"
-    
-    def is_friends(self, other_user):
-        """Are these 2 users friends?"""
-        
-        found_friend_list = [user for user in self.friends if user == other_user]
-        return len(found_friend_list) == 1
-    
-    @classmethod
-    def signup(cls, username, first_name, last_name, email, password, image_url):
-        """Sign up the user.
-
-        Args:
-            username ([String]): [user's username]
-            email ([String]): [user's email]
-            password ([String]): [user's password]
-            image_url ([text]): [url of image]
-            first_name ([String]): [user's first name]
-            last_name ([String]): [user's last name]
-        """
-        
-        hashed_pwd = bcrypt.generate_password_hash(password).decode('UTF-8')
-        
-        user = Users(
-            first_name = first_name,
-            last_name = last_name,
-            email = email
-        )
-        
-        authentication_info = Authentication(
-            username = username,
-            password_hash = hashed_pwd,
-            ##password_salt = pwd_salt
-        )
-        
-        user_image = User_Photos(
-            image_url = image_url
-
-        )
-    
-        db.session.add(user, authentication_info, user_image)
-        return user
-    
-    @classmethod
-    def authenticate(cls, username, password):
-        """Find user with `username` and `password`. 
-        
-        This is a class method (call it on the class, not an individual user.)
-        It searches for a user whose password hash matches this password
-        and, if it finds such a user, returns that user object.
-
-        If can't find matching user (or if password is wrong), returns False.
-        """
-        
-        user = cls.query.filter_by(Users.credentials.has(username=username)).first()
-        
-        if user:
-            is_auth = bcrypt.check_password_hash(user.credentials.password_hash, password)
-            if is_auth:
-                return user
-        return False    
-    
-
 class Authentication(db.Model):
     """authentication table"""
     
@@ -215,19 +106,40 @@ class Province(db.Model):
     
     name = db.Column(db.String(), nullable=False)
     
+class Likes(db.Model):
+    """To keep track of likes for users"""
+    
+    __tablename__ = 'likes'
+    __table_args__ = {'extend_existing': True}
+    
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
+    
+    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    
+    liked = db.Column(db.Boolean, nullable=True)
+    
+    watched = db.Column(db.Boolean, nullable=True)
+    
+    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=True)
+    
+    tv_show_id = db.Column(db.Integer, db.ForeignKey('tv_shows.id'), nullable=True)
+    
+    date_liked = db.Column(db.DateTime, nullable=True, 
+                           default=datetime.utcnow())
+    
 class Movies(db.Model):
     """Movies table: for keeping track of the movies in user's queue, likes, etc"""
     
     __tablename__ = 'movies'
     __table_args__ = {'extend_existing': True}
     
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=True, autoincrement=True, unique=True)
     
     name = db.Column(db.String())
     
-    API_used = db.Column(db.String(), nullable=False)
+    API_used = db.Column(db.String(), nullable=True)
     
-    API_id = db.Column(db.String(), nullable=False
+    API_id = db.Column(db.String(), nullable=True
                        )   
     
 class TV_Shows(db.Model):
@@ -236,14 +148,13 @@ class TV_Shows(db.Model):
     __tablename__ = 'tv_shows'
     __table_args__ = {'extend_existing': True}
     
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
+    id = db.Column(db.Integer, primary_key=True, nullable=True, autoincrement=True, unique=True)
     
     name = db.Column(db.String())
     
-    API_used = db.Column(db.String(), nullable=False)
+    API_used = db.Column(db.String(), nullable=True)
     
-    API_id = db.Column(db.String(), nullable=False
-                       )           
+    API_id = db.Column(db.String(), nullable=True)           
         
 class Queue(db.Model):
     """Table listing out movies/tv shows in queue for users"""
@@ -301,43 +212,144 @@ class Genres(db.Model):
     name = db.Column(db.String(), nullable=False)
     
     details = db.Column(db.String(), nullable=True)
+
+
+class Users(db.Model):
+    """User in the system."""
     
-class Friends(db.Model):
-    """To keep track of user's relationship with other users"""
-    
-    __tablename__ = 'friends'
+    __tablename__ = 'users'
     __table_args__ = {'extend_existing': True}
     
-    id = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True, unique=True)
+    user_id = db.Column(db.Integer, primary_key=True, 
+                   nullable=False, unique=True, 
+                   autoincrement=True)
     
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    first_name = db.Column(db.String(), nullable=True)
     
-    friend_user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    last_name = db.Column(db.String(), nullable=True)
     
-    date_start = db.Column(db.DateTime, nullable=False, 
+    created_at = db.Column(db.DateTime, nullable=False, 
                            default=datetime.utcnow())
     
+    country_code = db.Column(db.Integer, db.ForeignKey('country.id', ondelete='CASCADE'), nullable=True)
     
-class Likes(db.Model):
-    """To keep track of likes for users"""
+    region_code = db.Column(db.Integer, db.ForeignKey('region.id', ondelete='CASCADE'), nullable=True)
     
-    __tablename__ = 'likes'
-    __table_args__ = {'extend_existing': True}
+    state_code = db.Column(db.Integer, db.ForeignKey('state.id', ondelete='CASCADE'), nullable=True)
     
-    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True, unique=True)
+    province_code = db.Column(db.Integer, db.ForeignKey('province.id', ondelete='CASCADE'), nullable=True)
     
-    user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    city_code = db.Column(db.Integer, db.ForeignKey('city.id', ondelete='CASCADE'), nullable=True)
     
-    liked = db.Column(db.Boolean, nullable=True)
+    ##auth_id = db.Column(db.Integer, db.ForeignKey('auth.auth_id'), nullable=False, ondelete='cascade')
     
-    watched = db.Column(db.Boolean, nullable=True)
+    email = db.Column(db.String(), nullable=True)
     
-    movie_id = db.Column(db.Integer, db.ForeignKey('movies.id'), nullable=True)
     
-    tv_show_id = db.Column(db.Integer, db.ForeignKey('tv_shows.id'), nullable=True)
+    gender_id = db.Column(db.Integer, nullable=True)
     
-    date_liked = db.Column(db.DateTime, nullable=True, 
-                           default=datetime.utcnow())
+    details = db.Column(db.Text, nullable=True)
+    
+    ##confirmation_code = db.Column(db.String(), nullable=False)
+    
+    ##confirmation_time = db.Column(db.DateTime, default=datetime.utcnow())
+    
+    
+    ##Using the 'likes' table as an intermediary table between the users and liked shows/movies
+    
+    tv_show_likes = db.relationship('TV_Shows', secondary='likes', cascade="all, delete")
+    
+    movie_likes = db.relationship('Movies', secondary='likes', cascade="all, delete")
+    
+    ##Using the 'friends' table as an intermediary table between the users who are friends with each other
+    
+    friends = db.relationship("Users", secondary='friends', 
+                              primaryjoin = (user_id == Friends.user_id_1),
+                              secondaryjoin = (user_id == Friends.user_id_2)
+                                                            , cascade="all, delete")
+    
+    credentials = db.relationship("Authentication", primaryjoin = (user_id == Authentication.user_id), cascade="all, delete")
+    
+    user_photo = db.relationship("User_Photos", primaryjoin = (user_id == User_Photos.user_id), cascade="all, delete")
+    
+    genres_liked = db.relationship("Genres", secondary="liked_genres", primaryjoin = (user_id == Liked_Genres.user_id),
+                              secondaryjoin = (Liked_Genres.genre_id == Genres.id), cascade="all, delete")
+    
+    pending_friends_request = db.relationship("Users", secondary="pending_friend_requests", primaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_to),
+                              secondaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_from), cascade="all, delete")
+    
+    def __repr__(self):
+        return f"<User #{self.user_id}: {self.credentials.username}, {self.email}>"
+    
+    def is_friends(self, other_user):
+        """Are these 2 users friends?"""
+        
+        found_friend_list = [user for user in self.friends if user == other_user]
+        return len(found_friend_list) == 1
+    
+    @classmethod
+    def signup(cls, first_name, last_name, email):
+        """Sign up the user.
+
+        Args:
+            username ([String]): [user's username]
+            email ([String]): [user's email]
+            password ([String]): [user's password]
+            image_url ([text]): [url of image]
+            first_name ([String]): [user's first name]
+            last_name ([String]): [user's last name]
+        """
+        
+        
+        
+        user = Users(
+            first_name = first_name,
+            last_name = last_name,
+            email = email
+        )
+        
+        # authentication_info = Authentication(
+        #     username = username,
+        #     password_hash = hashed_pwd,
+        #     user_id = user.user_id
+        #     ##password_salt = pwd_salt
+        # )
+        
+        # user_image = User_Photos(
+        #     image_url = image_url,
+        #     user_id = user.user_id
+
+        # )
+    
+        db.session.add(user)
+        return user
+    
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password`. 
+        
+        This is a class method (call it on the class, not an individual user.)
+        It searches for a user whose password hash matches this password
+        and, if it finds such a user, returns that user object.
+
+        If can't find matching user (or if password is wrong), returns False.
+        """
+        
+        user = cls.query.filter_by(Users.credentials.has(username=username)).first()
+        
+        if user:
+            is_auth = bcrypt.check_password_hash(user.credentials.password_hash, password)
+            if is_auth:
+                return user
+        return False    
+    
+
+
+    
+
+    
+    
+
     
 #     class Liked_Actors(db.Model):
 #     """table to keep track of user's liked genres in order to make recommendations"""

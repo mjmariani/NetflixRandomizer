@@ -4,11 +4,14 @@ from flask import Flask, render_template, request, flash, redirect, session, g, 
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
+from flask_bootstrap import Bootstrap
 
 from forms import *
 from models import *
 
 CURR_USER_KEY = 1
+
+
 
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
@@ -31,9 +34,11 @@ app.run(use_reloader=True)
 toolbar = DebugToolbarExtension(app)
 
 
+bootstrap = Bootstrap(app)
+
 connect_db(app)
-# db.drop_all()
-# db.create_all()
+db.drop_all()
+db.create_all()
 ########################################################################################################
 #User signup/login/logout
 ##The bottom code for before request, login, logout come from Springboard warbler project code
@@ -99,8 +104,50 @@ def login():
 @app.route('/signup', methods=["GET", "POST"])
 def sign_up():
     """handle user sign up"""
+    if CURR_USER_KEY in session:
+        del session[CURR_USER_KEY]
+    form = SignupForm(request.form)
     
-    return render_template('/users/signup.html')
+    if request.method=='POST' and form.validate_on_submit():
+        
+        try:
+            user = Users.signup(
+                
+                first_name = form.first_name.data,
+                last_name = form.last_name.data,
+                
+                email=form.email.data,
+                
+                
+                
+            )
+            db.session.commit()
+            
+            user = Users.query.order_by(Users.user_id.desc()).first()
+            
+            hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
+            
+            auth = Authentication(username = form.username.data, password_hash=hashed_pwd, user_id=user.user_id)
+            db.session.add(auth)
+            db.session.commit()
+            
+            user_image = User_Photos(
+            image_url = form.image_url.data,
+            user_id = user.user_id
+
+            )
+            db.session.add(user_image)
+            db.session.commit()
+            
+            flash("Registration successful!")
+            return redirect('/users/details.html')
+            
+        except Exception as error:
+            db.session.rollback()
+            ##print(error)
+            return render_template('/users/signup.html', form=form, error=error)
+    
+    return render_template('/users/signup.html', form=form)
 
 @app.route('/show', methods=["GET", "POST"])
 def show():
