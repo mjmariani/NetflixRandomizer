@@ -9,7 +9,7 @@ from flask_bootstrap import Bootstrap
 from forms import *
 from models import *
 
-CURR_USER_KEY = 1
+CURR_USER_KEY = "curr_user"
 
 
 
@@ -37,8 +37,15 @@ toolbar = DebugToolbarExtension(app)
 bootstrap = Bootstrap(app)
 
 connect_db(app)
-db.drop_all()
-db.create_all()
+# db.drop_all()
+# db.create_all()
+
+# @app.before_request
+# def add_user_to_g():
+#     """adding user to global object. If we're logged in, add curr user to Flask global."""
+#     session[CURR_USER_KEY] = 1
+#     g.user = Users.query.get(session[CURR_USER_KEY])
+    
 ########################################################################################################
 #User signup/login/logout
 ##The bottom code for before request, login, logout come from Springboard warbler project code
@@ -48,7 +55,7 @@ def add_user_to_g():
     """adding user to global object. If we're logged in, add curr user to Flask global."""
 
     if CURR_USER_KEY in session:
-        g.user = User.query.get(session[CURR_USER_KEY])
+        g.user = Users.query.get(session[CURR_USER_KEY])
         
     else:
         g.user = None
@@ -56,7 +63,9 @@ def add_user_to_g():
 def do_login(user):
     """Log in user."""
     
-    session[CURR_USER_KEY] = user.id
+    session[CURR_USER_KEY] = user.user_id ##this is the user id of the user
+    # import pdb; pdb.set_trace()
+    add_user_to_g()
     
 def do_logout():
     """Logout user."""
@@ -73,6 +82,7 @@ def do_logout():
 def info():
     """Show info page"""
     
+
     return render_template('info.html')
 
 @app.route('/users/<int:user_id>')
@@ -87,19 +97,46 @@ def edit():
     
     return render_template('users/edit.html')
 
-@app.route('/friend_detail.html')
+@app.route('/friend_detail')
 def friend_detail():
     
     """freind's details"""
     
     return render_template('/users/friend_detail.html')
 
+
+@app.route('/logout', methods=["GET"])
+def logout():
+    
+    """to logout"""
+    
+    do_logout()
+    
+    return redirect('/')
+
+
 @app.route('/login', methods=["GET", "POST"])
 def login():
     
     """handle user login"""
     
-    return render_template('/users/login.html')
+    form = LoginForm(request.form)
+    
+    if request.method=='POST' and form.validate_on_submit():
+        
+        user = Authentication.authenticate(form.username.data,
+                                 form.password.data)
+            
+        if user:
+            do_login(user)
+            ##flash(f"Hello, {Authentication.query.filter_by(user_id=int(user.user_id)).first().username}!", "success")
+            return redirect("/details")
+
+        flash("Invalid credentials.", 'danger')
+    
+    
+    
+    return render_template('/users/login.html', form=form)
 
 @app.route('/signup', methods=["GET", "POST"])
 def sign_up():
@@ -121,14 +158,20 @@ def sign_up():
                 
                 
             )
-            db.session.commit()
             
-            user = Users.query.order_by(Users.user_id.desc()).first()
+            ##db.session.commit()
+            
+            
+            # user = Users.query.order_by(Users.user_id.desc()).first()
             
             hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
             
             auth = Authentication(username = form.username.data, password_hash=hashed_pwd, user_id=user.user_id)
+            
             db.session.add(auth)
+            db.session.flush()
+            db.session.refresh(auth)
+            
             db.session.commit()
             
             user_image = User_Photos(
@@ -138,8 +181,13 @@ def sign_up():
             )
             db.session.add(user_image)
             db.session.commit()
+            ##import pdb; pdb.set_trace()
+            
+            do_login(user)
+            
             
             flash("Registration successful!")
+            
             return redirect('/users/details.html')
             
         except Exception as error:

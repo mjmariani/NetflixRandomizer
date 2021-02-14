@@ -40,6 +40,28 @@ class Authentication(db.Model):
                            default=datetime.utcnow())
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+    
+    @classmethod
+    def authenticate(cls, username, password):
+        """Find user with `username` and `password`. 
+        
+        This is a class method (call it on the class, not an individual user.)
+        It searches for a user whose password hash matches this password
+        and, if it finds such a user, returns that user object.
+
+        If can't find matching user (or if password is wrong), returns False.
+        """
+        
+        # file deepcode ignore CopyPasteError/test: <please specify a reason of ignoring this>
+        credential = cls.query.filter_by(username=username).first()
+        
+        
+        if credential:
+            is_auth = bcrypt.check_password_hash(credential.password_hash, password)
+            if is_auth:
+                user = Users.query.get(credential.user_id)
+                return user
+        return False  
   
   ##Parts of code below on the Pending_Friend_Request table was influenced from source: https://github.com/logicfool/FlaskBook/blob/master/app.py  
 class Pending_Friend_Requests(db.Model):
@@ -268,7 +290,7 @@ class Users(db.Model):
                               secondaryjoin = (user_id == Friends.user_id_2)
                                                             , cascade="all, delete")
     
-    credentials = db.relationship("Authentication", primaryjoin = (user_id == Authentication.user_id), cascade="all, delete")
+    credentials = db.relationship("Authentication", primaryjoin = (user_id == Authentication.user_id),  lazy='dynamic', backref=db.backref('Users', uselist=False), cascade="all, delete")
     
     user_photo = db.relationship("User_Photos", primaryjoin = (user_id == User_Photos.user_id), cascade="all, delete")
     
@@ -278,8 +300,8 @@ class Users(db.Model):
     pending_friends_request = db.relationship("Users", secondary="pending_friend_requests", primaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_to),
                               secondaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_from), cascade="all, delete")
     
-    def __repr__(self):
-        return f"<User #{self.user_id}: {self.credentials.username}, {self.email}>"
+    # def __repr__(self):
+    #     return f"<{Authentication.query.filter_by(user_id=int(self.user_id)).first().username}, {self.email}>"
     
     def is_friends(self, other_user):
         """Are these 2 users friends?"""
@@ -322,26 +344,12 @@ class Users(db.Model):
         # )
     
         db.session.add(user)
+        db.session.flush()
+        db.session.refresh(user)
         return user
     
-    @classmethod
-    def authenticate(cls, username, password):
-        """Find user with `username` and `password`. 
+ 
         
-        This is a class method (call it on the class, not an individual user.)
-        It searches for a user whose password hash matches this password
-        and, if it finds such a user, returns that user object.
-
-        If can't find matching user (or if password is wrong), returns False.
-        """
-        
-        user = cls.query.filter_by(Users.credentials.has(username=username)).first()
-        
-        if user:
-            is_auth = bcrypt.check_password_hash(user.credentials.password_hash, password)
-            if is_auth:
-                return user
-        return False    
     
 
 

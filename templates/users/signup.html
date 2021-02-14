@@ -2,8 +2,21 @@
 {% import "bootstrap/wtf.html" as wtf %}
 {% block content %}
 {% if error %}
-    <p class="alert alert-danger" role="alert"><strong>Error:</strong> {{ error }} </p> 
+    <p class="alert alert-danger alert-dismissible fade show" role="alert"><strong>Error:</strong> {{ error }} 
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </p> 
   {% endif %}
+  <!-- {% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <ul class=flashes class="alert alert-danger alert-dismissible fade show" role="alert">
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %} -->
 <div class="text-center" style="margin: 0px;" id="sign-up-page">
       
     <img class="mb-3" src="../static/images/KtXo.gif" width="375" height="200">

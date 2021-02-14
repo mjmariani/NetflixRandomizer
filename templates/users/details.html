@@ -4,7 +4,7 @@
 ##includes user's info, queue and friend list
 {% with messages = get_flashed_messages() %}
   {% if messages %}
-    <ul class=flashes class="alert alert-success" role="alert">
+    <ul class=flashes class="alert alert-success alert-dismissible fade show" role="alert">
     {% for message in messages %}
       <li>{{ message }}</li>
     {% endfor %}

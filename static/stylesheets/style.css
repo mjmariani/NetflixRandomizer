@@ -145,3 +145,14 @@ ul {
 #signin-form {
   top: -5%;
 }
+
+.alert, .flashes {
+  left: 0;
+  margin: auto; // Centers alert component
+  position: absolute; // So that it will display relative to the entire page
+  right: 0;
+  text-align: center; // Centers 'Alert Test' text
+  top: 1em;
+  width: 30%;
+  z-index: 1; // Displays over app and bootstrap Navbar
+}

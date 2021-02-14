@@ -59,9 +59,18 @@
                         <a class="nav-link" class="btn btn-primary" data-toggle="modal" data-target="#exampleModalCenter">Friend Requests</a>
 
                     </li>
+                    <li class="nav-item">
+                      <a class="nav-link" href="/logout">Logout</a>
+
+                  </li>
                     {%endif%}
                 </ul>
                 {% if g.user %}
+                <li class="nav-item">
+                  <a class="nav-link" >Username: {{g.user.credentials.username}}</a>
+
+              </li>
+
             <form class="form-inline">
                 <input class="form-control mr-sm-2" type="search friend's name" placeholder="Search" aria-label="Search" name="q" id="search">
                 
@@ -76,7 +85,11 @@
 <!-- For Code Below - Source: Springboard Warbler project -->
 <div class="container">
     {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-{{ category }}">{{ message }}</div>
+    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
+      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
     {% endfor %}
 
     
@@ -94,7 +107,7 @@
             <div class="modal-body">
               {%for friend in pending_friends_request %}
               <div>
-              <ul>{{friend}}</ul><img src="{{user.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
+              <ul>{{friend}}</ul><img src="{{g.user.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
               <form action="/add_friend/{{friend.user_id}}" method="post"><button type="submit">Accept</button></form>
               <form method="post" action="/delete_friend_request/{{friend.user_id}}><button type="submit">Reject</button></form>
             </div>
