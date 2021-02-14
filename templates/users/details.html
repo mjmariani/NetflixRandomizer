@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-##includes user's info, queue and friend list
+<!-- ##includes user's info, queue and friend list -->
 {% with messages = get_flashed_messages() %}
   {% if messages %}
     <ul class=flashes class="alert alert-success alert-dismissible fade show" role="alert">
@@ -11,20 +11,18 @@
     </ul>
   {% endif %}
 {% endwith %}
-###Layout source: https://bbbootstrap.com/snippets/full-screen/individual-user-profile-social-network-94176986
-<div class="bg-white shadow rounded overflow-hidden">
+<!-- ###Layout source: https://bbbootstrap.com/snippets/full-screen/individual-user-profile-social-network-94176986 -->
+<div class="bg-white shadow rounded overflow-hidden text-center align-items-center " id="details">
     <div class="px-4 pt-0 pb-4 cover">
         <div class="media align-items-end profile-head">
             <div class="profile mr-3">
-                <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
+                <img src=photo
                     alt="..." width="130" class="rounded mb-2 img-thumbnail">
                 <a href="/edit" class="btn btn-outline-dark btn-sm btn-block">Edit profile</a>
             </div>
             <div class="media-body mb-5 text-white">
                 <h4 class="mt-0 mb-0">{{user.first_name}} {{user.last_name}}</h4>
-                <!-- <p class="small mb-4">
-                    <i class="fas fa-map-marker-alt mr-2"></i>
-                    {{user.</p> -->
+                
             </div>
         </div>
     </div>
@@ -40,18 +38,20 @@
     <div class="px-4 py-3">
         <h5 class="mb-0">Friends</h5>
         <div class="p-4 rounded shadow-sm bg-light">
+            {%if friends %}
             {% for friend in friends %}
-            <p class="font-italic mb-0">friend.username</p>
+            <p class="font-italic mb-0">friend.credentials.username</p>
             
             {%endfor%}
+            {%endif%}
         </div>
     </div>
 
     <div class="px-4 py-3">
         <h5 class="mb-0">Queue</h5>
         <div class="p-4 rounded shadow-sm bg-light">
-            {% for movie in queue %}
-            <li class="font-italic mb-0">movie.name</li>
+            {% for video in videos %}
+            <li class="font-italic mb-0">{{video}}</li>
             
             {%endfor%}
         </div>

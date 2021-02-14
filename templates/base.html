@@ -13,6 +13,10 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.3.1/css/all.css">
     <link rel="stylesheet" href="/static/stylesheets/style.css">
     <link rel="shortcut icon" href="/static/favicon.ico">
+
+    {%block head %}
+    {% endblock %}
+
 </head>
 
 
@@ -67,7 +71,7 @@
                 </ul>
                 {% if g.user %}
                 <li class="nav-item">
-                  <a class="nav-link" >Username: {{g.user.credentials.username}}</a>
+                  <a class="nav-link" href="/users/{{g.user.user_id}}">Username: {{g.user.credentials.first().username}}</a>&nbsp;
 
               </li>
 
@@ -105,9 +109,9 @@
               </button>
             </div>
             <div class="modal-body">
-              {%for friend in pending_friends_request %}
+              {%for friend in g.user.pending_friends_request %}
               <div>
-              <ul>{{friend}}</ul><img src="{{g.user.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
+              <ul>{{friend.credentials.username}}</ul><img src="{{friend.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
               <form action="/add_friend/{{friend.user_id}}" method="post"><button type="submit">Accept</button></form>
               <form method="post" action="/delete_friend_request/{{friend.user_id}}><button type="submit">Reject</button></form>
             </div>

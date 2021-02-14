@@ -37,8 +37,8 @@ toolbar = DebugToolbarExtension(app)
 bootstrap = Bootstrap(app)
 
 connect_db(app)
-# db.drop_all()
-# db.create_all()
+##db.drop_all()
+##db.create_all()
 
 # @app.before_request
 # def add_user_to_g():
@@ -86,21 +86,49 @@ def info():
     return render_template('info.html')
 
 @app.route('/users/<int:user_id>')
-def details():
+def details(user_id):
     """Show profile details page"""
     
-    return render_template('users/details.html')
+    user = Users.query.get_or_404(user_id)
+    
+    friends = user.friends.all()
+    
+    friend_count = len(friends)
+    
+    username = user.credentials.first().username
+    
+    photo = user.user_photo.first().image_url
+    
+    queue = Queue.query.filter(user_id == user_id)
+    
+    videos = []
+    
+    for video in queue:
+        if video.movie_id:
+            movie = Movies.query.filter(id==video.movie_id).first()
+            videos.append(movie.name)
+        if video.tv_show_id:
+            tv_show = TV_Shows.query.filter(id==video.tv_show_id).first()
+            videos.append(tv_show.name)
+    
+    
+    return render_template('users/details.html', user=user, friends=friends,
+                           username=username, photo=photo, friend_count = friend_count, queue = queue, videos = videos)
 
 @app.route('/edit', methods=["GET", "POST"])
 def edit():
     """edit user information"""
     
-    return render_template('users/edit.html')
+    user = g.user
+    
+    return render_template('users/edit.html', user = user)
 
 @app.route('/friend_detail')
 def friend_detail():
     
     """freind's details"""
+    
+    user = g.user
     
     return render_template('/users/friend_detail.html')
 
@@ -202,7 +230,20 @@ def show():
     
     """To show and run the netflix randomizer"""
     
-    return render_template('/users/show.html')
+    
+    form = GenresLikedEditForm(request.form)
+    
+    # if request.method=='POST' and form.validate_on_submit():
+        
+    #     try:
+            
+    
+    
+    
+    
+    
+    
+    return render_template('/users/show.html', form=form)
 
 
 
@@ -231,16 +272,16 @@ def accept_friend_request():
     
     ##Used the following code for help in setting this code: https://github.com/logicfool/FlaskBook/blob/master/app.py
     
-    requestor_id = Pending_Friend_Requests.query.filter_by(user_request_sent_from == user_id).first()
+    requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first()
     
-    new_friends = Friends(user_id=g.user, friend_user_id=requestor_id)
+    new_friends = Friends(user_id_1=g.user.user_id, user_id_2=requestor_id.user_request_sent_from)
     
     
     
     db.session.add(new_friends)
     db.session.commit(new_friends)
     
-    delete_requestor_id = Pending_Friend_Requests.query.filter_by(user_request_sent_from == user_id).first().delete()
+    delete_requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first().delete()
     
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)
@@ -252,7 +293,7 @@ def delete_friend_request():
     
     """deleting friend request"""
     
-    delete_requestor_id = Pending_Friend_Requests.query.filter_by(user_request_sent_from == user_id).first().delete()
+    delete_requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first().delete()
     
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)

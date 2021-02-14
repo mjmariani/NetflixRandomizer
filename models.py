@@ -67,8 +67,8 @@ class Authentication(db.Model):
 class Pending_Friend_Requests(db.Model):
     __tablename__ = "pending_friend_requests"
     id = db.Column(db.Integer, primary_key=True, nullable=False)
-    user_request_sent_from = db.Column(db.String)
-    user_request_sent_to = db.Column(db.String)
+    user_request_sent_from = db.Column(db.Integer, db.ForeignKey('users.user_id'))
+    user_request_sent_to = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
     
 class Country(db.Model):
@@ -201,7 +201,7 @@ class User_Photos(db.Model):
     
     id = db.Column(db.Integer, primary_key=True, autoincrement=True, nullable=False, unique=True)
     
-    image_url = db.Column(db.Text, nullable=True, default="/static/images/default-pic.png")
+    image_url = db.Column(db.String, nullable=True, default="/static/images/default-pic.png")
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     
@@ -279,26 +279,26 @@ class Users(db.Model):
     
     ##Using the 'likes' table as an intermediary table between the users and liked shows/movies
     
-    tv_show_likes = db.relationship('TV_Shows', secondary='likes', cascade="all, delete")
+    tv_show_likes = db.relationship('TV_Shows', secondary='likes', lazy='dynamic', cascade="all, delete")
     
-    movie_likes = db.relationship('Movies', secondary='likes', cascade="all, delete")
+    movie_likes = db.relationship('Movies', secondary='likes', lazy='dynamic', cascade="all, delete")
     
     ##Using the 'friends' table as an intermediary table between the users who are friends with each other
     
     friends = db.relationship("Users", secondary='friends', 
                               primaryjoin = (user_id == Friends.user_id_1),
-                              secondaryjoin = (user_id == Friends.user_id_2)
-                                                            , cascade="all, delete")
+                              secondaryjoin = (user_id == Friends.user_id_2),
+                                                            lazy='dynamic', cascade="all, delete")
     
     credentials = db.relationship("Authentication", primaryjoin = (user_id == Authentication.user_id),  lazy='dynamic', backref=db.backref('Users', uselist=False), cascade="all, delete")
     
-    user_photo = db.relationship("User_Photos", primaryjoin = (user_id == User_Photos.user_id), cascade="all, delete")
+    user_photo = db.relationship("User_Photos", primaryjoin = (user_id == User_Photos.user_id), lazy='dynamic', cascade="all, delete")
     
     genres_liked = db.relationship("Genres", secondary="liked_genres", primaryjoin = (user_id == Liked_Genres.user_id),
-                              secondaryjoin = (Liked_Genres.genre_id == Genres.id), cascade="all, delete")
+                              secondaryjoin = (Liked_Genres.genre_id == Genres.id), lazy='dynamic', cascade="all, delete")
     
     pending_friends_request = db.relationship("Users", secondary="pending_friend_requests", primaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_to),
-                              secondaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_from), cascade="all, delete")
+                              secondaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_from), lazy='dynamic', cascade="all, delete")
     
     # def __repr__(self):
     #     return f"<{Authentication.query.filter_by(user_id=int(self.user_id)).first().username}, {self.email}>"

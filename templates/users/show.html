@@ -1,80 +1,185 @@
 {% extends 'base.html' %}
-{% block content %}
 
 
-<!-- Parts of the html code below is from source: https://gist.github.com/bright-spark/
-ca9512850d105b6b4ae668266d591a9d
+
+<!-- Parts of the html code below is from source: https://www.codeseek.co/RobVermeer/tinder-swipe-cards-japZpY
+
 
 Some parts have been changed to fit the website design -->
 
-<div class="container">
-    <div class="stack">
-      <div class="final-message">No more kitten :'(</div>
-      <ul>
-        <li>
-          <div id="card10" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/300/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card9" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/400/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="car8" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/450/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card7" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/800/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card6" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/100/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card5" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/400/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card4" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/150/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card3" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="http://www.escaledigitale.com/im/team/anita@2x.png"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card2" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/600/200"></div>
-          </div>
-        </li>
-        <li>
-          <div id="card1" class="card js-swiping-card">
-            <div class="card-illustration js-lazyload" data-original="https://placekitten.com/g/400/200"></div>
-          </div>
-        </li>
-      </ul>
+
+{%block head %}
+
+<meta charset="UTF-8">
+  <title>Tinder swipe cards</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/normalize/5.0.0/normalize.min.css">
+
+  <link rel='stylesheet prefetch' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css'>
+
+      <link rel="stylesheet" href="css/style.css">
+
+
+{%endblock%}
+
+
+
+
+
+
+
+{% block content %}
+
+<div id="filter" class="col-2">
+  <h1>Filter Selections</h1>
+  <form class="form-genre" method="POST" id="genre-form">
+
+    {{ form.hidden_tag() }}
+    <hr>
+      <div class="form-group">
+
+        <label>
+          <b>Genres</b>
+        </label>
+        {%for field in form.genres%}
+        <div class="form-check">
+          <label>
+            {{field.label}}
+            {{field}}
+
+          </label>
+
+        </div>
+        {%endfor%}
+
+      </div>
+
+      <hr>
+      <div class="form-group">
+        <label>
+          <b>Type</b>
+        </label>
+        
+        <select class="form-select" aria-label="select type">
+          {%for field in form.video_type%}
+          <option>{{field}}</option>
+          {%endfor%}
+          </select>
+        
+      </div>
+      <hr>
+      <button class="btn btn-sm btn-info">Filter</button>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    <!-- {{ form.hidden_tag() }}
+    {% for field in form if field.widget.input_type != 'hidden' %}
+      {% for error in field.errors %}
+        <span class="text-danger">{{ error }}</span>
+      {% endfor %}
+
+      {% for subfield in form.genres | batch(4, '&nbsp;') %}
+      <div class="row">
+      {% for field in subfield %} 
+      {{ field(class="form-check", label=field.label.text) }}
+        
+        {%endfor%} 
+      </div>
+      {% endfor %}
+
+
+      
+    {% endfor %}
+
+
+    {% for field in form.video_type %}
+    <div class="form-group col-lg-12">
+      {{ field(placeholder=field.label.text, class="form-control") }}
     </div>
-    <div class="btn-controls text-center">
-      <button type="button" class="btn btn-danger js-left-trigger">
-        Ugly kitten
-      </button>
-      <button type="button" class="btn btn-primary js-right-trigger">
-        Atomic kitten
-      </button>
+{% endfor %}
+
+          
+            
+                <button class="btn btn-primary btn-lg" type="submit">Start</button> -->
+            </form>
+
+
+
+
+</div>
+
+
+
+
+
+
+
+
+<div class="tinder">
+  <div class="tinder--status">
+    <i class="fa fa-remove"></i>
+    <i class="fa fa-heart"></i>
+  </div>
+
+  <div class="tinder--cards">
+    <div class="tinder--card">
+      <img src="https://placeimg.com/600/300/people">
+      <h3>Demo card 1</h3>
+      <p>This is a demo for Tinder like swipe cards</p>
+    </div>
+    <div class="tinder--card">
+      <img src="https://placeimg.com/600/300/animals">
+      <h3>Demo card 2</h3>
+      <p>This is a demo for Tinder like swipe cards</p>
+    </div>
+    <div class="tinder--card">
+      <img src="https://placeimg.com/600/300/nature">
+      <h3>Demo card 3</h3>
+      <p>This is a demo for Tinder like swipe cards</p>
+    </div>
+    <div class="tinder--card">
+      <img src="https://placeimg.com/600/300/tech">
+      <h3>Demo card 4</h3>
+      <p>This is a demo for Tinder like swipe cards</p>
+    </div>
+    <div class="tinder--card">
+      <img src="https://placeimg.com/600/300/arch">
+      <h3>Demo card 5</h3>
+      <p>This is a demo for Tinder like swipe cards</p>
     </div>
   </div>
+
+  <div class="tinder--buttons">
+    <button id="nope"><i class="fa fa-remove"></i></button>
+    <button id="love"><i class="fa fa-heart"></i></button>
+  </div>
+</div>
+  <script src='https://hammerjs.github.io/dist/hammer.min.js'></script>
+
   
-  <script src="script.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.2.2/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/hammer.js/2.0.8/hammer.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.lazyload/1.9.1/jquery.lazyload.js"></script>
+
+    <script  src="static/index.js"></script>
+
+
+
+
+
+
+
+
+
+
+
+
   {% endblock %}

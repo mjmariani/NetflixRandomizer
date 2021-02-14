@@ -1,5 +1,5 @@
 from flask_wtf import FlaskForm, RecaptchaField
-from wtforms import StringField, PasswordField, TextAreaField, SelectField, SelectMultipleField
+from wtforms import widgets, SelectMultipleField, StringField, PasswordField, TextAreaField, RadioField, SelectField, SelectMultipleField
 from wtforms.validators import DataRequired, Email, Length
 
 class SignupForm(FlaskForm):
@@ -38,12 +38,19 @@ class LoginForm(FlaskForm):
     username = StringField('Username', validators=[DataRequired()])
     password = PasswordField('Password', validators=[Length(min=6)])
     ##submit = SubmitButton('Login')
+    
+class MultiCheckboxField(SelectMultipleField):
+    widget = widgets.ListWidget(prefix_label=False)
+    option_widget = widgets.CheckboxInput()
 
 
 class GenresLikedEditForm(FlaskForm):
     """Form for storing liked genres in order to pull recommendations"""
     
-    genres = SelectMultipleField('(Optional) Genres', choices=[('Action','Action'), 
+    genres = MultiCheckboxField('Genres', choices=[('Action','Action'), 
             ('Comedy','Comedy'), ('Drama','Drama'),('Fantasy','Fantasy'),
             ('Horror','Horror'),('Mystery','Mystery'),('Romance','Romance'), 
             ('Thriller','Thriller')])
+    
+    video_type = SelectField('Type', choices=[('TV Shows','TV Shows'), ('Movies','Movies')])
+    
