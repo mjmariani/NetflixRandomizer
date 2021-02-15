@@ -47,10 +47,12 @@ class MultiCheckboxField(SelectMultipleField):
 class GenresLikedEditForm(FlaskForm):
     """Form for storing liked genres in order to pull recommendations"""
     
-    genres = MultiCheckboxField('Genres', choices=[('Action','Action'), 
-            ('Comedy','Comedy'), ('Drama','Drama'),('Fantasy','Fantasy'),
-            ('Horror','Horror'),('Mystery','Mystery'),('Romance','Romance'), 
-            ('Thriller','Thriller')])
+    genres = MultiCheckboxField('Genres', choices=[(28,'Action'), 
+            (35,'Comedy'), (18,'Drama'),(14,'Fantasy'),
+            (27,'Horror'),(9648,'Mystery'),(10749,'Romance'), 
+            (53,'Thriller'),(10752,'War'),(99,'Documentary'),(10751,'Family'),
+            (36,'History'),(10402,'Music'),(878,'Science Fiction'),
+            (10770,'TV Movie'),(80,'Crime'),(16,'Animation'), (12,'Adventure'),(37,'Western')])
     
     video_type = SelectField('Type', choices=[('TV Shows','TV Shows'), ('Movies','Movies')])
     

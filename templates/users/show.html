@@ -41,8 +41,10 @@ Some parts have been changed to fit the website design -->
         <label>
           <b>Genres</b>
         </label>
-        {%for field in form.genres%}
-        <div class="form-check">
+        {%for row in form.genres | batch(3, ' ') %}
+        <div class="row">
+          {%for field in row %}
+        <div class="form-check" name=genre>
           <label>
             {{field.label}}
             {{field}}
@@ -51,7 +53,9 @@ Some parts have been changed to fit the website design -->
 
         </div>
         {%endfor%}
-
+      </div>
+        {%endfor%}
+      
       </div>
 
       <hr>
@@ -60,63 +64,15 @@ Some parts have been changed to fit the website design -->
           <b>Type</b>
         </label>
         
-        <select class="form-select" aria-label="select type">
-          {%for field in form.video_type%}
-          <option>{{field}}</option>
-          {%endfor%}
-          </select>
         
+          {{form.video_type}}
+          
+          
       </div>
       <hr>
-      <button class="btn btn-sm btn-info">Filter</button>
+      <button class="btn btn-sm btn-info" type="submit">Filter</button>
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-    <!-- {{ form.hidden_tag() }}
-    {% for field in form if field.widget.input_type != 'hidden' %}
-      {% for error in field.errors %}
-        <span class="text-danger">{{ error }}</span>
-      {% endfor %}
-
-      {% for subfield in form.genres | batch(4, '&nbsp;') %}
-      <div class="row">
-      {% for field in subfield %} 
-      {{ field(class="form-check", label=field.label.text) }}
-        
-        {%endfor%} 
-      </div>
-      {% endfor %}
-
-
-      
-    {% endfor %}
-
-
-    {% for field in form.video_type %}
-    <div class="form-group col-lg-12">
-      {{ field(placeholder=field.label.text, class="form-control") }}
-    </div>
-{% endfor %}
-
-          
-            
-                <button class="btn btn-primary btn-lg" type="submit">Start</button> -->
             </form>
-
-
-
-
 </div>
 
 
@@ -170,6 +126,10 @@ Some parts have been changed to fit the website design -->
   
 
     <script  src="static/index.js"></script>
+    
+    <script src="https://unpkg.com/axios/dist/axios.js"></script>
+    <script src="jquery-3.5.1.min.js"></script>
+    <script  src="static/app.js"></script>
 
 
 
