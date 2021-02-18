@@ -89,10 +89,12 @@
 <!-- For Code Below - Source: Springboard Warbler project -->
 <div class="container">
     {% for category, message in get_flashed_messages(with_categories=True) %}
-    <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">{{ message }}
-      <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+    <div class={{category}} role="alert" id="messages">
+      <span class="closebtn" onclick="this.parentElement.style.display='none';">&times;</span>
+      {{ message }}
+      <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close">
         <span aria-hidden="true">&times;</span>
-      </button>
+      </button> -->
     </div>
     {% endfor %}
 

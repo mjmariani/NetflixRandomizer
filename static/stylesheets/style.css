@@ -135,7 +135,39 @@ body {
   z-index: 2;
 }
 
+#messages{
+  left: 0;
+  margin: auto; 
+  position: absolute; 
+  right: 0;
+  text-align: center; 
+  top: 4em;
+  width: 30%;
+  z-index: 2; 
+  padding: 20px;
+  background-color: rgb(62, 138, 236); /* Red */
+  color: white;
+  margin-bottom: 15px;
 
+}
+
+/**source: w3schools ***/
+/* The close button */
+.closebtn {
+  margin-left: 15px;
+  color: white;
+  font-weight: bold;
+  float: right;
+  font-size: 22px;
+  line-height: 20px;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+/* When moving the mouse over the close button */
+.closebtn:hover {
+  color: black;
+}
 
 
 

@@ -239,7 +239,7 @@ def show():
             
     
     
-    
+    flash('Please select filter preferences below', 'info')
     
     
     
