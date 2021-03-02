@@ -13,7 +13,7 @@
     top: 0;
     width: 100vw;
     left: 0;
-    z-index: -1;
+    /* z-index: -1; */
     background-position: center center;
     color: #fff;
     text-align: center;
@@ -27,7 +27,8 @@ body {
   margin: 0;
 }
 
-.navbar {height: 5%;}
+.navbar {height: 5%;
+  z-index: 1;}
 
 #info-tab, #login-page, #sign-up-page {
     height: 90vh;
@@ -39,7 +40,7 @@ body {
     top: 10%;
     width: 100vw;
     left: 0;
-    z-index: -1;
+    /* z-index: -1; */
     background-position: center center;
     color: #fff;
     text-align: center;
@@ -105,6 +106,11 @@ body {
   align-items: center;
   }
 
+
+  #learn-more-button{
+    z-index: -1;
+  }
+
 #signin-form {
   top: -5%;
 }
@@ -133,6 +139,16 @@ body {
   border-radius: 5px;
   opacity: 0.95;
   z-index: 2;
+}
+.card-info{
+  font-size: 20px;
+}
+
+#exampleModal{
+  height: 80%;
+  width: 40%;
+  position: absolute;
+  left: 30%;
 }
 
 #messages{
@@ -277,14 +293,15 @@ body {
 
 .tinder--card h3 {
   margin-top: 32px;
-  font-size: 32px;
+  
   padding: 0 16px;
   pointer-events: none;
+  
 }
 
 .tinder--card p {
   margin-top: 24px;
-  font-size: 20px;
+  
   padding: 0 16px;
   pointer-events: none;
 }
@@ -293,6 +310,7 @@ body {
   flex: 0 0 100px;
   text-align: center;
   padding-top: 20px;
+  
 }
 
 .tinder--buttons button {

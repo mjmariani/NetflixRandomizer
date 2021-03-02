@@ -85,7 +85,8 @@ def info():
 
     return render_template('info.html')
 
-@app.route('/users/<int:user_id>')
+##the route below gets the details page, posts to details page (not implemented yet), and deletes queue items
+@app.route('/users/<int:user_id>', methods=["GET", "POST", "DELETE"])
 def details(user_id):
     """Show profile details page"""
     
@@ -105,15 +106,27 @@ def details(user_id):
     
     for video in queue:
         if video.movie_id:
+            
             movie = Movies.query.filter(id==video.movie_id).first()
             videos.append(movie.name)
         if video.tv_show_id:
             tv_show = TV_Shows.query.filter(id==video.tv_show_id).first()
             videos.append(tv_show.name)
     
-    
+    if request.method == "DELETE":
+        try:
+            ##queue = Queue.query.filter(user_id == user_id)
+            id_to_delete = request.args.id
+            video_to_delete = Queue.query.filter(id == id_to_delete)
+            db.session.delete(video_to_delete)
+            db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            flash(error, error)
+            
+            
     return render_template('users/details.html', user=user, friends=friends,
-                           username=username, photo=photo, friend_count = friend_count, queue = queue, videos = videos)
+                        username=username, photo=photo, friend_count = friend_count, queue = queue, videos = videos)
 
 @app.route('/edit', methods=["GET", "POST"])
 def edit():
@@ -165,6 +178,7 @@ def login():
     
     
     return render_template('/users/login.html', form=form)
+
 
 @app.route('/signup', methods=["GET", "POST"])
 def sign_up():
@@ -225,24 +239,65 @@ def sign_up():
     
     return render_template('/users/signup.html', form=form)
 
-@app.route('/show', methods=["GET", "POST"])
+@app.route('/show', methods=["GET", "POST", "PUT"])
 def show():
     
     """To show and run the netflix randomizer"""
     
     
     form = GenresLikedEditForm(request.form)
-    
-    # if request.method=='POST' and form.validate_on_submit():
-        
-    #     try:
-            
-    
-    
     flash('Please select filter preferences below', 'info')
     
-    
-    
+    if request.method =='PUT':
+        # import pdb; pdb.set_trace()
+        try:
+            if request.args.type == 'Movies':
+                movie = Movies(
+                        name = request.args.name,
+                        API_id = request.args.id,
+                    )
+                db.session.add(movie)
+                db.session.flush()
+                db.session.refresh(movie)
+                like = Likes(
+                    user_id = g.user.user_id,
+                    liked = True,
+                    movie_id = movie.id,
+                    )
+                db.session.add(like)
+                db.session.flush()
+                db.session.refresh(like)
+                queue = Queue(
+                    user_id = g.user.user_id,
+                    movie_id = movie.id,
+                )
+                db.session.commit()
+                
+            else: 
+                tvShow = TV_Shows(
+                    name = request.args.name,
+                    API_id = request.args.id,
+                )
+                db.session.add(tvShow)
+                db.session.flush()
+                db.session.refresh(tvShow)
+                like = Likes(
+                    liked = True,
+                    tv_show_id = tvShow.id,
+                    user_id = g.user.user_id,
+                )
+                db.session.add(like)
+                db.session.flush()
+                db.session.refresh(like)
+                queue = Queue(
+                    user_id = g.user.user_id,
+                    tv_show_id = tvShow.id,
+                )
+                db.session.commit()
+        except Exception as error:
+            db.session.rollback()
+            flash(error, error)
+
     return render_template('/users/show.html', form=form)
 
 

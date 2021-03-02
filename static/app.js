@@ -15,8 +15,8 @@ $( document ).ready(function() {
     console.log( "ready!" );
 });
 
- $("#genre-form").on( "submit", async function( event ) {
-     event.preventDefault();
+$("#genre-form").on( "submit", async function( event ) {
+    event.preventDefault();
     let forms = $(this).serializeArray();
     
     let genres, type;
@@ -26,15 +26,14 @@ $( document ).ready(function() {
     let response = await video_type_router(genres, type);
     console.log(response);
     let flag = true;
-    $.getScript("static/index.js", function(response){
-        tinder_wheel(response);
-    });
+    
+    await tinder_wheel(response, genres, type);
     
 
-   });
+  });
 
-   let card_removed = 0;
-// $(".tinder--cards").
+  let card_removed = 0;
+
 
 
  function splitGenresAndTypes (forms){
@@ -73,7 +72,7 @@ async function video_type_router(genres, type){
 if(type[0]==="Movies"){
     return await getMovies(genres, type);
 }
-if(type[0]==="TV_Show"){
+else{
     return await getTVShows(genres, type);
 }
 
@@ -81,8 +80,37 @@ if(type[0]==="TV_Show"){
 
 async function getMovies(genres, type){
     let genres_string = genres.toString();
+    
     console.log("in get movie");
  return await axios.get('https://api.themoviedb.org/3/discover/movie', {
+    params: {
+      api_key: '35a466991fbef8b9209345a5bdfbf733',
+        sort_by: 'popularity.desc',
+        
+        include_video: 'True',
+        language: 'en-US',
+        with_genres: genres_string,
+        
+
+
+
+    }
+  })
+  .then((response) =>{
+    
+    return response;
+})
+  .catch((error) => {
+    console.log(error);
+    return error;
+  });}
+
+
+  async function getTVShows(genres, type){
+    let genres_string = genres.toString();
+    
+    console.log("in get tv");
+  return await axios.get('https://api.themoviedb.org/3/discover/tv', {
     params: {
       api_key: '35a466991fbef8b9209345a5bdfbf733',
         sort_by: 'popularity.desc',
@@ -103,5 +131,4 @@ async function getMovies(genres, type){
     console.log(error);
     return error;
   });}
-
 
