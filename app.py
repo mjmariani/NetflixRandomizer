@@ -248,7 +248,7 @@ def show():
     form = GenresLikedEditForm(request.form)
     flash('Please select filter preferences below', 'info')
     
-    if request.method =='PUT':
+    if request.method =='POST' and request.args.like == 'True':
         # import pdb; pdb.set_trace()
         try:
             if request.args.type == 'Movies':
