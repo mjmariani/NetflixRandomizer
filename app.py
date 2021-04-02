@@ -47,6 +47,8 @@ connect_db(app)
 ##db.drop_all()
 db.create_all()
 
+
+
 # @app.before_request
 # def add_user_to_g():
 #     """adding user to global object. If we're logged in, add curr user to Flask global."""
@@ -506,3 +508,6 @@ def add_header(req):
     req.headers["Expires"] = "0"
     req.headers['Cache-Control'] = 'public, max-age=0'
     return req
+
+if __name__ == '__main__':
+    app.run()
