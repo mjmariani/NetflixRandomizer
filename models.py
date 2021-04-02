@@ -300,6 +300,8 @@ class Users(db.Model):
     pending_friends_request = db.relationship("Users", secondary="pending_friend_requests", primaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_to),
                               secondaryjoin = (user_id == Pending_Friend_Requests.user_request_sent_from), lazy='dynamic', cascade="all, delete")
     
+    queue = db.relationship("Queue", primaryjoin = (user_id == Queue.user_id),  lazy='dynamic', backref=db.backref('Users', uselist=False), cascade="all, delete")
+    
     # def __repr__(self):
     #     return f"<{Authentication.query.filter_by(user_id=int(self.user_id)).first().username}, {self.email}>"
     

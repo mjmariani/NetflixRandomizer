@@ -1,11 +1,14 @@
-/*Downloaded from https://www.codeseek.co/RobVermeer/tinder-swipe-cards-japZpY */
+/*Parts of Code Downloaded from https://www.codeseek.co/RobVermeer/tinder-swipe-cards-japZpY */
 'use strict';
+
+//const { debug } = require("node:console");
 
 
 
 let page = 1;
 
 async function tinder_wheel(response, genres, type){
+  try{
   let tinderContainer = document.querySelector('.tinder');
   let allCards = document.querySelectorAll('.tinder--card');
   // let nope = document.getElementById('nope');
@@ -215,8 +218,9 @@ async function tinder_wheel(response, genres, type){
         
        params: {like: 'True',
                 name: card.innerText,
-                id: response.data.results[count],
+                id: response.data.results[count].id,
                 type: type
+                
        }
      }).catch((error) => {
       
@@ -240,7 +244,10 @@ async function tinder_wheel(response, genres, type){
     }
     count++;
   }
-
+  //return true;
+} catch(error){
+  console.log(error);
+}
 }
 
 async function getNewPage(genres, type){

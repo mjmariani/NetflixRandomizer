@@ -113,9 +113,9 @@
             <div class="modal-body">
               {%for friend in g.user.pending_friends_request %}
               <div>
-              <ul>{{friend.credentials.username}}</ul><img src="{{friend.user_photo.image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
+              <ul>{{friend.credentials.username}}</ul><img src="{{friend.user_photo.first().image_url}}" alt="..." class="img-thumbnail" width="20px" height="20px">
               <form action="/add_friend/{{friend.user_id}}" method="post"><button type="submit">Accept</button></form>
-              <form method="post" action="/delete_friend_request/{{friend.user_id}}><button type="submit">Reject</button></form>
+              <form method="post" action="/delete_friend_request/{{friend.first().user_id}}><button type="submit">Reject</button></form>
             </div>
             {%endfor%}
             </div>

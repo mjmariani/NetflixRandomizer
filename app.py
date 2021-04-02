@@ -92,15 +92,17 @@ def details(user_id):
     
     user = Users.query.get_or_404(user_id)
     
-    friends = user.friends.all()
+    friends = user.friends
     
-    friend_count = len(friends)
+    friend_count = friends.count()
     
     username = user.credentials.first().username
     
     photo = user.user_photo.first().image_url
+    if photo is None:
+        photo = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
     
-    queue = Queue.query.filter(user_id == user_id)
+    queue = db.session.query(Queue).filter(user_id == user_id)
     
     videos = []
     
@@ -108,10 +110,10 @@ def details(user_id):
         if video.movie_id:
             
             movie = Movies.query.filter(id==video.movie_id).first()
-            videos.append(movie.name)
+            videos.append(movie)
         if video.tv_show_id:
             tv_show = TV_Shows.query.filter(id==video.tv_show_id).first()
-            videos.append(tv_show.name)
+            videos.append(tv_show)
     
     if request.method == "DELETE":
         try:
@@ -133,17 +135,133 @@ def edit():
     """edit user information"""
     
     user = g.user
+    user_id = g.user.user_id
+    username = g.user.credentials.first().username
+    country = ""
+    city = ""
+    province = ""
+    state = ""
     
-    return render_template('users/edit.html', user = user)
+    if request.method=='GET':
+        try:
+            country = db.session.query(Country).filter(Country.id == (db.session.query(User).filter(User.user_id == user_id).first().country_code)).first().name 
+            city = db.session.query(City).filter(City.id == (db.session.query(User).filter(User.user_id == user_id).first().city_code)).first().name
+            province = db.session.query(Province).filter(Province.id == (db.session.query(User).filter(User.user_id == user_id).first().province_code)).first().name
+            state = db.session.query(State).filter(State.id == (db.session.query(User).filter(User.user_id == user_id).first().state_code)).first().name
+            
+        except Exception as error:
+            flash(error, error)
+    
+    if request.method=='POST' and form.validate_on_submit():
+        try:
+            user_info_update = db.session.query(User).get(user_id)
+            props = {'first_name': form.firstName.data,
+                     'last_name': form.lastName.data,
+                     'email': form.email.data,
+                     }
+            
+            for key, value in props.items():
+                setattr(user_info_update, key, value)
+            db.session.flush() 
+            db.session.refresh()   
+            picture_update = db.session.query(User_Photos).get(user_id)
+            picture_props = {'image_url': form.picture.data}
+            
+            for key, value in picture_props.items():
+                setattr(picture_update, key, value)
+            db.session.flush()
+            db.session.refresh()
+            country = ""
+            
+            if db.session.query(Country).filter(Country.name == form.country.data) != None:
+                country = db.session.query(Country).filter_by(Country.name == form.country.data)
+            else:
+                country = Country(name = form.country.data)
+                db.session.add(country)
+                db.session.flush()
+                db.session.refresh()
+                
+            city = ""
+            
+            if db.session.query(City).filter(City.name == form.city.data) != None:
+                city = db.session.query(City).filter_by(City.name == form.city.data)
+            else:
+                city = City(name = form.city.data)
+                db.session.add(city)
+                db.session.flush()
+                db.session.refresh()
+                
+            state = ""
+            
+            if db.session.query(State).filter(State.name == form.state.data) != None:
+                state = db.session.query(State).filter_by(State.name == form.state.data)
+            else:
+                state = State(name = form.state.data)
+                db.session.add(state)
+                db.session.flush()
+                db.session.refresh()
+                
+            province = ""
+            
+            if db.session.query(Province).filter(Province.name == form.province.data) != None:
+                province = db.session.query(Province).filter_by(Province.name == form.province.data)
+            else:
+                province = Province(name = form.province.data)
+                db.session.add(province)
+                db.session.flush()
+                db.session.refresh()
+            
+            authentication_update = db.session.query(Authentication).filter(Authentication.user_id == user_id)
+            hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
+            props = {'username': form.username.data,
+                     'password': hashed_pwd
+                     
+                     }
+            
+            for key, value in props.items():
+                setattr(user_info_update, key, value)
+            db.session.flush()    
+            db.session.refresh()
+            
+            countryId = db.session.query(Country).filter(Country.name == form.country.data).first().id
+            cityId = db.session.query(City).filter(City.name == form.city.data).first().id
+            provinceId = db.session.query(Province).filter(Country.name == form.province.data).first().id
+            stateId = db.session.query(State).filter(State.name == form.state.data).first().id
+            
+            other_user_props = {'country_code': countryId, 
+                                'city_code': cityId,
+                                'province_code': provinceId,
+                                'state_code': stateId}
+            
+            for key, value in other_user_props.items():
+                setattr(user_info_update, key, value)
+            
+            db.session.flush()
+            db.session.refresh()
+            db.session.commit()
+            
+            return redirect('/users/<int:user_id>')
+        
+        except Exception as error:
+            db.session.rollback()
+            flash(error, error)
+    
+    return render_template('users/edit.html', user = user, country=country, state=state, province=province, city = city, username = username)
 
-@app.route('/friend_detail')
+@app.route('/friend_detail/<int:user_id>')
 def friend_detail():
     
-    """freind's details"""
+    """friend's details"""
     
     user = g.user
     
-    return render_template('/users/friend_detail.html')
+    friend = db.session.query(User).filter(User.user_id == user_id).first()
+    friend_count = friend.friends.count()
+    photo = friend.user_photo.first().image_url
+    if photo is None:
+        photo = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
+    
+    return render_template('/users/friend_detail.html', friend = friend, friend_count = friend_count, photo = photo)
 
 
 @app.route('/logout', methods=["GET"])
@@ -230,7 +348,7 @@ def sign_up():
             
             flash("Registration successful!")
             
-            return redirect('/users/details.html')
+            return render_template('/users/details', user=user)
             
         except Exception as error:
             db.session.rollback()

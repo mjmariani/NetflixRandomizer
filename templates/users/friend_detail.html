@@ -8,9 +8,9 @@
     <div class="px-4 pt-0 pb-4 cover">
         <div class="media align-items-end profile-head">
             <div class="profile mr-3">
-                <img src="https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
+                <img src="{{photo}}" onerror="this.src='../static/images/default-pic.png'"
                     alt="..." width="130" class="rounded mb-2 img-thumbnail">
-                <a href="/edit" class="btn btn-outline-dark btn-sm btn-block">Edit profile</a>
+                 <a href="/add_friend/{{friend.user_id}}" method="POST" class="btn btn-outline-dark btn-sm btn-block">Add Friend</a> 
             </div>
             <div class="media-body mb-5 text-white">
                 <h4 class="mt-0 mb-0">{{friend.first_name}} {{friend.last_name}}</h4>

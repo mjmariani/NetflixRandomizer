@@ -167,6 +167,17 @@ body {
 
 }
 
+.container{
+  width: 80%;
+  height: 80%;
+
+}
+
+.edit{
+  overflow:scroll;
+  overflow-x: hidden;
+}
+
 /**source: w3schools ***/
 /* The close button */
 .closebtn {
