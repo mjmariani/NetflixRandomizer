@@ -15,15 +15,18 @@ CURR_USER_KEY = "curr_user"
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
-app.config['TESTING'] = True
-app.testing = True
+##app.config['TESTING'] = True
+##app.testing = True
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
 # app.config['SQLALCHEMY_DATABASE_URI'] = (
 #     os.environ.get('DATABASE_URL', 'postgresql://postgres:postgres@localhost:5432/randomizer'))
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/randomizer'
+##app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/randomizer'
+
+##Heroku Database URI:
+app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aabvgpkkdnoded:062bfc6ff018204e4b75d64bfe78bf634c11adbf0395fdd6dfeb7c87a6033c4c@ec2-52-45-73-150.compute-1.amazonaws.com:5432/dek8pep0m2o9hq'
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -42,7 +45,7 @@ bootstrap = Bootstrap(app)
 
 connect_db(app)
 ##db.drop_all()
-##db.create_all()
+db.create_all()
 
 # @app.before_request
 # def add_user_to_g():
