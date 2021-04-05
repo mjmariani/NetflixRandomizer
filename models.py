@@ -15,9 +15,9 @@ class Friends(db.Model):
     
     id = db.Column(db.Integer, nullable=False, primary_key=True, autoincrement=True, unique=True)
     
-    user_id_1 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
+    user_id_1 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     
-    user_id_2 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=True)
+    user_id_2 = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
     
     date_start = db.Column(db.DateTime, nullable=True, 
                            default=datetime.utcnow())
@@ -40,6 +40,7 @@ class Authentication(db.Model):
                            default=datetime.utcnow())
     
     user_id = db.Column(db.Integer, db.ForeignKey('users.user_id'), nullable=False)
+
     
     @classmethod
     def authenticate(cls, username, password):
@@ -52,8 +53,7 @@ class Authentication(db.Model):
         If can't find matching user (or if password is wrong), returns False.
         """
         
-        # file deepcode ignore CopyPasteError/test: <please specify a reason of ignoring this>
-        credential = cls.query.filter_by(username=username).first()
+        credential = Authentication.query.filter(Authentication.username == username).first()
         
         
         if credential:
@@ -66,7 +66,7 @@ class Authentication(db.Model):
   ##Parts of code below on the Pending_Friend_Request table was influenced from source: https://github.com/logicfool/FlaskBook/blob/master/app.py  
 class Pending_Friend_Requests(db.Model):
     __tablename__ = "pending_friend_requests"
-    id = db.Column(db.Integer, primary_key=True, nullable=False)
+    id = db.Column(db.Integer, primary_key=True, nullable=False, autoincrement=True)
     user_request_sent_from = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     user_request_sent_to = db.Column(db.Integer, db.ForeignKey('users.user_id'))
     
@@ -161,6 +161,7 @@ class Movies(db.Model):
     
     API_used = db.Column(db.String(), nullable=True)
     
+    ##sometimes API ids can include letters (alphanumeric) so this being a string is best
     API_id = db.Column(db.String(), nullable=True
                        )   
     
@@ -246,9 +247,9 @@ class Users(db.Model):
                    nullable=False, unique=True, 
                    autoincrement=True)
     
-    first_name = db.Column(db.String(), nullable=True)
+    first_name = db.Column(db.String(), nullable=False)
     
-    last_name = db.Column(db.String(), nullable=True)
+    last_name = db.Column(db.String(), nullable=False)
     
     created_at = db.Column(db.DateTime, nullable=False, 
                            default=datetime.utcnow())
@@ -265,7 +266,7 @@ class Users(db.Model):
     
     ##auth_id = db.Column(db.Integer, db.ForeignKey('auth.auth_id'), nullable=False, ondelete='cascade')
     
-    email = db.Column(db.String(), nullable=True)
+    email = db.Column(db.String(), nullable=False)
     
     
     gender_id = db.Column(db.Integer, nullable=True)
@@ -316,10 +317,7 @@ class Users(db.Model):
         """Sign up the user.
 
         Args:
-            username ([String]): [user's username]
             email ([String]): [user's email]
-            password ([String]): [user's password]
-            image_url ([text]): [url of image]
             first_name ([String]): [user's first name]
             last_name ([String]): [user's last name]
         """
@@ -347,7 +345,7 @@ class Users(db.Model):
     
         db.session.add(user)
         db.session.flush()
-        db.session.refresh(user)
+        ##db.session.refresh(user)
         return user
     
  

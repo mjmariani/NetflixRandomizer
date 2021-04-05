@@ -1,6 +1,6 @@
 import os
 
-from flask import Flask, render_template, request, flash, redirect, session, g, abort
+from flask import Flask, render_template, request, flash, redirect, session, g, abort, url_for
 from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
@@ -26,7 +26,10 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 ##app.config['SQLALCHEMY_DATABASE_URI'] = 'postgresql://postgres:postgres@localhost:5432/randomizer'
 
 ##Heroku Database URI:
-app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aabvgpkkdnoded:062bfc6ff018204e4b75d64bfe78bf634c11adbf0395fdd6dfeb7c87a6033c4c@ec2-52-45-73-150.compute-1.amazonaws.com:5432/dek8pep0m2o9hq'
+##app.config['SQLALCHEMY_DATABASE_URI'] = 'postgres://aabvgpkkdnoded:062bfc6ff018204e4b75d64bfe78bf634c11adbf0395fdd6dfeb7c87a6033c4c@ec2-52-45-73-150.compute-1.amazonaws.com:5432/dek8pep0m2o9hq'
+
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('DATABASE_URL') or "postgresql://postgres:postgres@localhost:5432/randomizer"
+
 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['SQLALCHEMY_ECHO'] = False
@@ -108,7 +111,7 @@ def details(user_id):
     username = user.credentials.first().username
     
     photo = user.user_photo.first().image_url
-    if photo is None:
+    if photo is False:
         photo = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
     
     queue = db.session.query(Queue).filter(user_id == user_id)
@@ -137,7 +140,7 @@ def details(user_id):
             
             
     return render_template('users/details.html', user=user, friends=friends,
-                        username=username, photo=photo, friend_count = friend_count, queue = queue, videos = videos)
+                        username=username, photo=photo, friend_count = friend_count, queue = queue, videos = videos), 200
 
 @app.route('/edit', methods=["GET", "POST"])
 def edit():
@@ -172,90 +175,118 @@ def edit():
             for key, value in props.items():
                 setattr(user_info_update, key, value)
             db.session.flush() 
-            db.session.refresh()   
-            picture_update = db.session.query(User_Photos).get(user_id)
-            picture_props = {'image_url': form.picture.data}
-            
-            for key, value in picture_props.items():
-                setattr(picture_update, key, value)
-            db.session.flush()
             db.session.refresh()
-            country = ""
+            if form.picture.data:    
+                picture_update = db.session.query(User_Photos).get(user_id)
+                picture_props = {'image_url': form.picture.data}
             
-            if db.session.query(Country).filter(Country.name == form.country.data) != None:
-                country = db.session.query(Country).filter_by(Country.name == form.country.data)
-            else:
-                country = Country(name = form.country.data)
+                for key, value in picture_props.items():
+                    setattr(picture_update, key, value)
+                db.session.flush()
+                db.session.refresh()
+            
+            if form.country.data: 
+                country = ""
+            
+                if db.session.query(Country).filter(Country.name == form.country.data) != None:
+                    country = db.session.query(Country).filter_by(Country.name == form.country.data)
+                else:
+                    country = Country(name = form.country.data)
                 db.session.add(country)
                 db.session.flush()
                 db.session.refresh()
-                
-            city = ""
+                countryId = db.session.query(Country).filter(Country.name == form.country.data).first().id
+                other_user_props = {'country_code': countryId 
+                                }
             
-            if db.session.query(City).filter(City.name == form.city.data) != None:
-                city = db.session.query(City).filter_by(City.name == form.city.data)
-            else:
-                city = City(name = form.city.data)
+                for key, value in other_user_props.items():
+                    setattr(user_info_update, key, value)
+            
+                db.session.flush()
+                db.session.refresh()
+                db.session.commit()
+            
+            if form.city.data:    
+                city = ""
+            
+                if db.session.query(City).filter(City.name == form.city.data) != None:
+                    city = db.session.query(City).filter_by(City.name == form.city.data)
+                else:
+                    city = City(name = form.city.data)
                 db.session.add(city)
                 db.session.flush()
                 db.session.refresh()
+                cityId = db.session.query(City).filter(City.name == form.city.data).first().id
                 
-            state = ""
+                other_user_props = {'city_code': cityId}
             
-            if db.session.query(State).filter(State.name == form.state.data) != None:
-                state = db.session.query(State).filter_by(State.name == form.state.data)
-            else:
-                state = State(name = form.state.data)
+                for key, value in other_user_props.items():
+                    setattr(user_info_update, key, value)
+            
+                db.session.flush()
+                db.session.refresh()
+                db.session.commit()
+            
+            if form.state.data:    
+                state = ""
+            
+                if db.session.query(State).filter(State.name == form.state.data) != None:
+                    state = db.session.query(State).filter_by(State.name == form.state.data)
+                else:
+                    state = State(name = form.state.data)
                 db.session.add(state)
                 db.session.flush()
                 db.session.refresh()
-                
-            province = ""
+                stateId = db.session.query(State).filter(State.name == form.state.data).first().id
             
-            if db.session.query(Province).filter(Province.name == form.province.data) != None:
-                province = db.session.query(Province).filter_by(Province.name == form.province.data)
-            else:
-                province = Province(name = form.province.data)
+                other_user_props = {'state_code': stateId}
+            
+                for key, value in other_user_props.items():
+                    setattr(user_info_update, key, value)
+            
+                db.session.flush()
+                db.session.refresh()
+                db.session.commit()
+            
+            if form.province.data:    
+                province = ""
+            
+                if db.session.query(Province).filter(Province.name == form.province.data) != None:
+                    province = db.session.query(Province).filter_by(Province.name == form.province.data)
+                else:
+                    province = Province(name = form.province.data)
                 db.session.add(province)
                 db.session.flush()
                 db.session.refresh()
-            
-            authentication_update = db.session.query(Authentication).filter(Authentication.user_id == user_id)
-            hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
-            props = {'username': form.username.data,
-                     'password': hashed_pwd
-                     
-                     }
-            
-            for key, value in props.items():
-                setattr(user_info_update, key, value)
-            db.session.flush()    
-            db.session.refresh()
-            
-            countryId = db.session.query(Country).filter(Country.name == form.country.data).first().id
-            cityId = db.session.query(City).filter(City.name == form.city.data).first().id
-            provinceId = db.session.query(Province).filter(Country.name == form.province.data).first().id
-            stateId = db.session.query(State).filter(State.name == form.state.data).first().id
-            
-            other_user_props = {'country_code': countryId, 
-                                'city_code': cityId,
+                provinceId = db.session.query(Province).filter(Country.name == form.province.data).first().id
+                other_user_props = {
                                 'province_code': provinceId,
-                                'state_code': stateId}
+                                }
+                for key, value in other_user_props.items():
+                    setattr(user_info_update, key, value)
             
-            for key, value in other_user_props.items():
-                setattr(user_info_update, key, value)
+                db.session.flush()
+                db.session.refresh()
+                db.session.commit()
             
-            db.session.flush()
-            db.session.refresh()
-            db.session.commit()
+            if form.password.data:
+                authentication_update = db.session.query(Authentication).filter(Authentication.user_id == user_id)
+                hashed_pwd = bcrypt.generate_password_hash(form.password.data).decode('UTF-8')
+                props = {'username': form.username.data,
+                    'password': hashed_pwd}
             
-            return redirect('/users/<int:user_id>')
+                for key, value in props.items():
+                    setattr(user_info_update, key, value)
+                db.session.flush()    
+                db.session.refresh()
+
+            return redirect('/users/<int:user_id>'), 302
         
         except Exception as error:
             db.session.rollback()
             flash(error, error)
     
-    return render_template('users/edit.html', user = user, country=country, state=state, province=province, city = city, username = username)
+    return render_template('users/edit.html', user = user, country=country, state=state, province=province, city = city, username = username), 200
 
 @app.route('/friend_detail/<int:user_id>')
 def friend_detail():
@@ -298,7 +329,7 @@ def login():
         if user:
             do_login(user)
             ##flash(f"Hello, {Authentication.query.filter_by(user_id=int(user.user_id)).first().username}!", "success")
-            return redirect("/details")
+            return redirect(url_for('details', user_id = user.user_id), 302)
 
         flash("Invalid credentials.", 'danger')
     
@@ -329,7 +360,8 @@ def sign_up():
             )
             
             ##db.session.commit()
-            
+            db.session.add(user)
+            db.session.flush()
             
             # user = Users.query.order_by(Users.user_id.desc()).first()
             
@@ -339,9 +371,9 @@ def sign_up():
             
             db.session.add(auth)
             db.session.flush()
-            db.session.refresh(auth)
+            ##db.session.refresh(auth)
             
-            db.session.commit()
+            ##db.session.commit()
             
             user_image = User_Photos(
             image_url = form.image_url.data,
@@ -349,22 +381,25 @@ def sign_up():
 
             )
             db.session.add(user_image)
+            db.session.flush()
             db.session.commit()
-            ##import pdb; pdb.set_trace()
+            
             
             do_login(user)
-            
+            ##import pdb; pdb.set_trace()
             
             flash("Registration successful!")
             
-            return render_template('/users/details', user=user)
+            html_dir = '/users/' + str(user.user_id)
+            
+            return redirect(url_for('details', user_id = user.user_id), 302)
             
         except Exception as error:
             db.session.rollback()
             ##print(error)
-            return render_template('/users/signup.html', form=form, error=error)
+            return render_template('/users/signup.html', form=form, error=error), 400
     
-    return render_template('/users/signup.html', form=form)
+    return render_template('/users/signup.html', form=form), 200
 
 @app.route('/show', methods=["GET", "POST", "PUT"])
 def show():
@@ -375,13 +410,13 @@ def show():
     form = GenresLikedEditForm(request.form)
     flash('Please select filter preferences below', 'info')
     
-    if request.method =='POST' and request.args.like == 'True':
+    if request.method =='POST' and request.data.like == 'True':
         # import pdb; pdb.set_trace()
         try:
-            if request.args.type == 'Movies':
+            if request.data.type == 'Movies':
                 movie = Movies(
-                        name = request.args.name,
-                        API_id = request.args.id,
+                        name = request.data.name,
+                        API_id = request.data.id,
                     )
                 db.session.add(movie)
                 db.session.flush()
@@ -402,8 +437,8 @@ def show():
                 
             else: 
                 tvShow = TV_Shows(
-                    name = request.args.name,
-                    API_id = request.args.id,
+                    name = request.data.name,
+                    API_id = request.data.id,
                 )
                 db.session.add(tvShow)
                 db.session.flush()
@@ -425,7 +460,7 @@ def show():
             db.session.rollback()
             flash(error, error)
 
-    return render_template('/users/show.html', form=form)
+    return render_template('/users/show.html', form=form), 200
 
 
 
@@ -437,7 +472,7 @@ def home():
     """Show homepage
     """
     
-    return render_template('home.html')
+    return render_template('home.html'), 201
 
 @app.route('/home')
 def home_page():
@@ -510,4 +545,4 @@ def add_header(req):
     return req
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='localhost', port=5000)

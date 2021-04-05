@@ -214,15 +214,14 @@ async function tinder_wheel(response, genres, type){
      });}
       
      async function postLikeToDB(card){
-      return await axios.post('http://127.0.0.1:5000/show', null,{
-        
-       params: {like: 'True',
-                name: card.innerText,
-                id: response.data.results[count].id,
-                type: type
-                
-       }
-     }).catch((error) => {
+      return await axios({
+        method = 'post',
+        url: `http://localhost:5000/show`,
+        data: {'like': 'True',
+        'name': card.innerText,
+        'id': response.data.results[count].id,
+        'type': type} 
+      }).catch((error) => {
       
        console.log(error);
        return error;
