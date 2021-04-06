@@ -7,3 +7,4 @@ Link to Project Proposal:
 **Links to API:**
 
 [The Movie DB API](https://www.themoviedb.org/documentation/api)<br>
+
