@@ -216,7 +216,7 @@ async function tinder_wheel(response, genres, type){
      async function postLikeToDB(card){
       return await axios({
         method = 'post',
-        url: `http://localhost:5000/show`,
+        url: `${window.location.protocol}//${window.location.hostname}/show`,
         data: {'like': 'True',
         'name': card.innerText,
         'id': response.data.results[count].id,

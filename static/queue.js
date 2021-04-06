@@ -5,7 +5,7 @@ async function handleClick(event) {
         event.preventDefault();
         let userId = $('#delete-button').data("userId");
         let videoId = $('#delete-button').data("itemId");
-        await axios.delete(`http://127.0.0.1:5000/users/${userId}`, {
+        await axios.delete(`${window.location.protocol}//${window.location.hostname}/users/${userId}`, {
 params: {
   id = videoId,
     

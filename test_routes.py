@@ -23,8 +23,8 @@ os.environ['DATABASE_URL'] = "postgresql://postgres:postgres@localhost:5432/rand
 #     os.unlink(app.config['DATABASE'])
 
 
-class RandomizerViewsTestCase(TestCase):
-    """Integration tests for flask app"""
+class RandomizerTestCase_1(TestCase):
+    """Integration tests (split into 2 classes) for flask app"""
 
     def setUp(self):
         db.drop_all()
@@ -175,6 +175,41 @@ class RandomizerViewsTestCase(TestCase):
                 res = client.post('/signup', data = data, follow_redirects=True)
                 self.assertEqual(res.status_code, 400)
                 
+class RandomizerTestCase_2(TestCase):
+    """Integration tests (split into 2 classes) for flask app"""
+
+    def setUp(self):
+        db.drop_all()
+        db.create_all()
+        
+        u1 = Users.signup("Jeffrey", "Johnson", "johnson@gmail.com")
+        db.session.add(u1)
+        db.session.flush()
+        
+        u2 = Users.signup("Marcy", "Rogers", "marcyrogers@outlook.com")
+        db.session.add(u2)
+        db.session.flush()
+        
+        from flask_bcrypt import Bcrypt
+        bcrypt = Bcrypt()
+        pass_hash_1 = bcrypt.generate_password_hash("pass_hash_1").decode('UTF-8')
+        auth_u1 = Authentication("chrome2x", pass_hash_1, u1.user_id)
+        db.session.add(auth_u1)
+        db.session.flush()
+        pass_hash_2 = bcrypt.generate_password_hash("pass_hash_2").decode('UTF-8')
+        auth_u2 = Authentication("firefox2x", pass_hash_2, u2.user_id)
+        db.session.add(auth_u2)
+        db.session.flush()
+        db.session.commit()
+        self.u1 = u1
+        self.u2 = u2
+        self.u1.password = 'pass_hash_1'
+        self.auth_u1 = auth_u1
+        self.auth_u2 = auth_u2
+        self.u2.password = 'pass_hash_2'
+        
+    def tearDown(self):
+        db.drop_all()
 
     def test_randomizer_route(self):
         """Test randomizer route after login /get"""
