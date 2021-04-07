@@ -3,7 +3,7 @@ import tempfile
 
 #import pytest
 from unittest import TestCase
-from flask import jsonify
+
 from app import app
 from models import *
 
@@ -318,10 +318,10 @@ class RandomizerTestCase_4(TestCase):
         with app.app_context():
             with self.app.session_transaction() as change_session:
                 change_session['CURR_USER_KEY'] = self.u1.user_id
-        res = self.app.get('/show')
-        html = res.get_data(as_text=True)
-        self.assertEqual(res.status_code, 200)
-        self.assertIn('<h1>Filter Selections</h1>', html)
+            res = self.app.get('/show')
+            html = res.get_data(as_text=True)
+            self.assertEqual(res.status_code, 200)
+            self.assertIn('<h1>Filter Selections</h1>', html)
                 
 
     def test_randomizer_route(self):
@@ -329,13 +329,15 @@ class RandomizerTestCase_4(TestCase):
         with app.app_context():
             with self.app.session_transaction() as change_session:
                 change_session['CURR_USER_KEY'] = self.u1.user_id
-        data = {'like': 'True',
-                        'name': "innerText",
-                        'id': 54,
-                        'type': 'Movies'}
-        res = self.app.post('/show', data = data)
-        html = res.get_data(as_text=True)
-        self.assertEqual(res.status_code, 200)
+            from flask import json
+            data = json.dumps({"like": "True",
+                        "name":"innerText",
+                        "id": "54"
+            })
+            res = self.app.post('/show', data=data, content_type='application/json')
+            html = res.get_data(as_text=True)
+            ##self.assertEqual(res.status_code, 200)
+            self.assertNotIn('<div class="error" role="alert" id="messages">', html)
             ##self.assertIn('<div class="tinder--cards" >', html)
                 
     def test_randomizer_route(self):
@@ -343,31 +345,34 @@ class RandomizerTestCase_4(TestCase):
         with app.app_context():
             with self.app.session_transaction() as change_session:
                 change_session['CURR_USER_KEY'] = self.u1.user_id
-        data = {'like': 'True',
-                        'name': "innerText",
-                        'id': 54,
-                        'type': 'TV_Show'}
-        res = self.app.post('/show', data = data)
-        html = res.get_data(as_text=True)
-        self.assertNotIn('<div class="error" role="alert" id="messages">', html)            
+            from flask import jsonify
+            from flask import json
+            data = json.dumps({"like": "True",
+                        "name":"innerText",
+                        "id": "54"
+            })
+            res = self.app.post('/show', data=data, content_type='application/json')
+            html = res.get_data(as_text=True)
+            self.assertNotIn('<div class="error" role="alert" id="messages">', html)            
 
 ##Think in order to get good test coverage of /show, I will need to test on the client side as the this page is making external API calls on the client-side rather than back-end
 ##This is then done through mock testing
                 
     def test_randomizer_route(self):
         """Test randomizer route after login invalid /post"""
-        raw_data = {'like': 'True',
-                        'name': 'innerText',
-                        'id': 54,
-                        }
+        
         with app.app_context():
             with self.app.session_transaction() as change_session:
                 change_session['CURR_USER_KEY'] = self.u1.user_id
-        
-        res = self.app.post('/show', data = raw_data)
-        html = res.get_data(as_text=True)
-        self.assertEqual(res.status_code, 400)
-        self.assertIn('<div class="error" role="alert" id="messages">', html) 
+            from flask import json
+            data = json.dumps({"like": "True",
+                        "name":"innerText",
+                        "id": "54"
+            })
+            res = self.app.post('/show', data=data, content_type='application/json')
+            html = res.get_data(as_text=True)
+            self.assertEqual(res.status_code, 400)
+            self.assertIn('<div class="error" role="alert" id="messages">', html) 
 
 class RandomizerTestCase_5(TestCase):
     """Integration test for flask app"""

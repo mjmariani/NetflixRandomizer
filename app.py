@@ -420,60 +420,63 @@ def sign_up():
 def show():
     
     """To show and run the netflix randomizer"""
-    
+    ##Only the GET and POST methods are implemented
     
     form = GenresLikedEditForm(request.form)
     flash('Please select filter preferences below', 'info')
     
-    if request.method =='POST' and request.data.like == 'True':
-        # import pdb; pdb.set_trace()
-        try:
-            if request.data.type == 'Movies':
-                movie = Movies(
-                        name = request.data.name,
-                        API_id = request.data.id,
+    if request.method =='POST': 
+        import json
+        data = json.loads(str(request.get_json()))
+        if data.like == 'True':
+            
+            try:
+                if request.data.type == 'Movies':
+                    movie = Movies(
+                        name = data.name,
+                        API_id = data.id,
                     )
-                db.session.add(movie)
-                db.session.flush()
-                db.session.refresh(movie)
-                like = Likes(
+                    db.session.add(movie)
+                    db.session.flush()
+                    db.session.refresh(movie)
+                    like = Likes(
                     user_id = g.user.user_id,
                     liked = True,
                     movie_id = movie.id,
                     )
-                db.session.add(like)
-                db.session.flush()
-                db.session.refresh(like)
-                queue = Queue(
+                    db.session.add(like)
+                    db.session.flush()
+                    db.session.refresh(like)
+                    queue = Queue(
                     user_id = g.user.user_id,
                     movie_id = movie.id,
                 )
-                db.session.commit()
+                    db.session.commit()
                 
-            else: 
-                tvShow = TV_Shows(
-                    name = request.data.name,
-                    API_id = request.data.id,
+                else: 
+                    tvShow = TV_Shows(
+                    name = data.name,
+                    API_id = data.id,
                 )
-                db.session.add(tvShow)
-                db.session.flush()
-                db.session.refresh(tvShow)
-                like = Likes(
+                    db.session.add(tvShow)
+                    db.session.flush()
+                    db.session.refresh(tvShow)
+                    like = Likes(
                     liked = True,
                     tv_show_id = tvShow.id,
                     user_id = g.user.user_id,
                 )
-                db.session.add(like)
-                db.session.flush()
-                db.session.refresh(like)
-                queue = Queue(
+                    db.session.add(like)
+                    db.session.flush()
+                    db.session.refresh(like)
+                    queue = Queue(
                     user_id = g.user.user_id,
                     tv_show_id = tvShow.id,
                 )
-                db.session.commit()
-        except Exception as error:
-            db.session.rollback()
-            flash(error, error)
+                    db.session.commit()
+            except Exception as error:
+                db.session.rollback()
+                flash(error, error)
 
     return render_template('/users/show.html', form=form), 200
 
