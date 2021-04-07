@@ -5,15 +5,26 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
 from flask_bootstrap import Bootstrap
-
 from forms import *
 from models import *
 
+
+# if __name__ == '__main__':
+#     app.run(host='localhost', port=5000)
 CURR_USER_KEY = "curr_user"
 
 
+
+# def create_app():
+#     app = Flask(__name__)
+#     app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+#     db.init_app(app)
+    
 app = Flask(__name__)
 app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
+
+
+
 
 ##app.config['TESTING'] = True
 ##app.testing = True
@@ -47,8 +58,8 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "this really needs to be
 bootstrap = Bootstrap(app)
 
 connect_db(app)
-db.drop_all()
-db.create_all()
+# db.drop_all()
+# db.create_all()
 
 
 
@@ -348,6 +359,10 @@ def sign_up():
     if request.method=='POST' and form.validate_on_submit():
         
         try:
+            if form.username.data == "" or form.password.data == "":
+                flash("Username and Password can't be blank.", 'danger')
+                return render_template('/users/signup.html', form=form), 400
+                
             user = Users.signup(
                 
                 first_name = form.first_name.data,
@@ -544,5 +559,3 @@ def add_header(req):
     req.headers['Cache-Control'] = 'public, max-age=0'
     return req
 
-if __name__ == '__main__':
-    app.run(host='localhost', port=5000)
