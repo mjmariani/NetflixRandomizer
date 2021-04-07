@@ -34,14 +34,14 @@ JavaScript<br/>
 Bootstrap 4<br/>
 jQuery<br />
 
-###Database:
+### Database:
 
 Postgres
 
-###Testing:
+### Testing:
 Unittest
 
-##Usage
+## Usage
 
 The preliminary goal of my website will be to create a project which shows off all of the skills and technologies I have been learning thus far. Hopefully, I can create a foundation to which I can use to grow a more complex website should I decide to pursue this idea further. However, the main and ultimate goal, in terms of its audience, will be to create a place where one can go and be suggested movies, tv shows or other entertainment in a fun manner while being able to enjoy the suggested movies with others.<br/><br/>
 In terms of data, I will be primarily using movie and tv show information through the TMDB API. I’m choosing this API as I have just found out that Netflix ended their support for a public API.<br/><br/>
