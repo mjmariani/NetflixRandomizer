@@ -24,10 +24,11 @@ $("#genre-form").on( "submit", async function( event ) {
     // console.log(`genres =  ${genres}`);
 
     let response = await video_type_router(genres, type);
-    console.log(response);
+    
+    
     let flag = true;
     
-    await tinder_wheel(response, genres, type);
+    await tinder_wheel(response, genres[0], type[0]);
     
 
   });

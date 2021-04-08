@@ -24,7 +24,7 @@ Use the package manager [pip](https://pip.pypa.io/en/stable/) to install necessa
 **Package management**:<br/> PIP<br/><br/>
 Frameworks:<br/>
 Flask<br/>
-Flask-SQLAlchemy
+ORM: Flask-SQLAlchemy
 
 ### Web/Frontend:
 
@@ -33,6 +33,7 @@ CSS<br/>
 JavaScript<br/>
 Bootstrap 4<br/>
 jQuery<br />
+Hammer.js <br/>
 
 ### Database:
 

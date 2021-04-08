@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
 from flask_bootstrap import Bootstrap
-from forms import *
-from models import *
+from .forms import *
+from .models import *
 
 
 # if __name__ == '__main__':

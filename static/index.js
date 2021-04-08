@@ -9,6 +9,7 @@ let page = 1;
 
 async function tinder_wheel(response, genres, type){
   try{
+    console.log(response)
   let tinderContainer = document.querySelector('.tinder');
   let allCards = document.querySelectorAll('.tinder--card');
   // let nope = document.getElementById('nope');
@@ -27,7 +28,7 @@ async function tinder_wheel(response, genres, type){
   
   async function initCards(card, index) {
     if(newCardCount > 0){
-    refreshCards();
+    await refreshCards();
     
     let tinderContainer = document.querySelector('.tinder');
     let allCards = document.querySelectorAll('.tinder--card');
@@ -66,8 +67,8 @@ async function tinder_wheel(response, genres, type){
     
   }
   
-  initCards();
-  addNewData();
+  await initCards();
+  await addNewData();
   
   allCards.forEach(addAction);
   function addAction (el) {
@@ -123,7 +124,7 @@ async function tinder_wheel(response, genres, type){
         if(event.target.classList.contains('liked')){
           await postLikeToDB(event.target);
         }
-        initCards();
+        await initCards();
         
       }
     });
@@ -154,14 +155,14 @@ async function tinder_wheel(response, genres, type){
       }
   
       newCardCount = 1;
-      initCards();
+      await initCards();
     }
 
   }
   
   
 
-  function refreshCards(){
+  async function refreshCards(){
     
       
         
@@ -215,7 +216,7 @@ async function tinder_wheel(response, genres, type){
       
      async function postLikeToDB(card){
       return await axios({
-        method = 'post',
+        method : 'post',
         url: `${window.location.protocol}//${window.location.hostname}/show`,
         data: {'like': 'True',
         'name': card.innerText,
