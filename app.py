@@ -122,7 +122,7 @@ def details(user_id):
     username = user.credentials.first().username
     
     photo = user.user_photo.first().image_url
-    if photo is False:
+    if photo is None:
         photo = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
     
     queue = db.session.query(Queue).filter(user_id == user_id)
