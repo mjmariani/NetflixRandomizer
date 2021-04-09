@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
 from flask_bootstrap import Bootstrap
-from .forms import *
-from .models import *
+from forms import *
+from models import *
 
 
 # if __name__ == '__main__':
@@ -26,8 +26,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 
-app.config['TESTING'] = True
-app.testing = True
+#app.config['TESTING'] = True
+#app.testing = True
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
@@ -52,7 +52,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "this really needs to be
 #     app.run(host="0.0.0.0", port=port)
 
 ##app.run(use_reloader=True)
-toolbar = DebugToolbarExtension(app)
+#toolbar = DebugToolbarExtension(app)
 
 
 bootstrap = Bootstrap(app)
