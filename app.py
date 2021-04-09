@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
 from flask_bootstrap import Bootstrap
-from forms import *
-from models import *
+from .forms import *
+from .models import *
 
 
 # if __name__ == '__main__':
@@ -26,8 +26,8 @@ app.config['SEND_FILE_MAX_AGE_DEFAULT'] = 0
 
 
 
-##app.config['TESTING'] = True
-##app.testing = True
+app.config['TESTING'] = True
+app.testing = True
 
 # Get DB_URI from environ variable (useful for production/testing) or,
 # if not set there, use development local db.
@@ -52,7 +52,7 @@ app.config['SECRET_KEY'] = os.environ.get('SECRET_KEY', "this really needs to be
 #     app.run(host="0.0.0.0", port=port)
 
 ##app.run(use_reloader=True)
-##toolbar = DebugToolbarExtension(app)
+toolbar = DebugToolbarExtension(app)
 
 
 bootstrap = Bootstrap(app)
@@ -115,17 +115,17 @@ def details(user_id):
     
     user = Users.query.get_or_404(user_id)
     
-    friends = user.friends
+    friends = user.friends.all()
     
-    friend_count = friends.count()
+    friend_count = user.friends.count()
     
     username = user.credentials.first().username
     
     photo = user.user_photo.first().image_url
-    if photo is None:
-        photo = "https://images.unsplash.com/photo-1522075469751-3a6694fb2f61?ixlib=rb-1.2.1&amp;ixid=eyJhcHBfaWQiOjEyMDd9&amp;auto=format&amp;fit=crop&amp;w=500&amp;q=80"
+    if photo is '':
+        photo = "../static/images/default-pic.png"
     
-    queue = db.session.query(Queue).filter(user_id == user_id)
+    queue = db.session.query(Queue).filter(user_id == user_id).all()
     
     videos = []
     
@@ -156,7 +156,7 @@ def details(user_id):
 @app.route('/edit', methods=["GET", "POST"])
 def edit():
     """edit user information"""
-    
+    form = UserEditForm(request.form)
     user = g.user
     user_id = g.user.user_id
     username = g.user.credentials.first().username
@@ -297,7 +297,7 @@ def edit():
             db.session.rollback()
             flash(error, error)
     
-    return render_template('users/edit.html', user = user, country=country, state=state, province=province, city = city, username = username), 200
+    return render_template('users/edit.html', form=form, user = user, country=country, state=state, province=province, city = city, username = username ), 200
 
 @app.route('/friend_detail/<int:user_id>')
 def friend_detail():
@@ -520,8 +520,8 @@ def accept_friend_request():
     
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)
-    
-    return render_template('users/details.html')
+    user_id = g.user.user_id
+    return redirect(url_for('details', user_id = g.user.user_id), 302)
 
 @app.route('/delete_friend_request/<int:user_id>', methods=['POST'])
 def delete_friend_request():
@@ -533,7 +533,7 @@ def delete_friend_request():
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)
     
-    return render_template('users/details.html')
+    return redirect(url_for('details', user_id = g.user.user_id), 302)
     
 ########################################################################################################  
 
