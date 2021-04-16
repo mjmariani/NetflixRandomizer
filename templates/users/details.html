@@ -12,7 +12,7 @@
   {% endif %}
 {% endwith %}
 <!-- ###Layout source: https://bbbootstrap.com/snippets/full-screen/individual-user-profile-social-network-94176986 -->
-<div class="bg-white shadow rounded overflow-hidden text-center align-items-center " id="details">
+<div class="mx-auto bg-white shadow rounded overflow-hidden text-center align-items-center w-75 p-3" id="details">
     <div class="px-4 pt-0 pb-4 cover">
         <div class="media align-items-end profile-head">
             <div class="profile mr-3">
@@ -49,21 +49,14 @@
             {% endif %}
         </div>
     </div>
-
     <div class="px-4 py-3">
         <h5 class="mb-0">Queue</h5>
         <div class="p-4 rounded shadow-sm bg-light">
             {% for video in videos %}
-            <li class="font-italic mb-0">{{video.name}}<button id="delete-button" data-userId="{{user.user_id}}" data-itemId="{{video.id}}">Delete</button></li>
-            
+            <li class="font-italic mb-0">{{video.name}}  <button id="delete-button" data-userId="{{user.user_id}}" data-itemId="{{video.id}}">Delete</button></li>
             {%endfor%}
         </div>
     </div>
 </div>
-
-
-
-<script  src="../static/queue.js"></script>
-
-
-    {% endblock %}
+<script  src="/static/queue.js" defer></script>
+{% endblock %}

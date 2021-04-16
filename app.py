@@ -5,8 +5,8 @@ from flask_debugtoolbar import DebugToolbarExtension
 from sqlalchemy.exc import IntegrityError
 from flask_login import LoginManager, login_required, logout_user, current_user, login_user, UserMixin, current_user
 from flask_bootstrap import Bootstrap
-from forms import *
-from models import *
+from .forms import *
+from .models import *
 
 
 # if __name__ == '__main__':
@@ -122,27 +122,27 @@ def details(user_id):
     username = user.credentials.first().username
     
     photo = user.user_photo.first().image_url
-    if photo is '':
+    if photo == '':
         photo = "../static/images/default-pic.png"
     
-    queue = db.session.query(Queue).filter(user_id == user_id).all()
+    queue = db.session.query(Queue).filter(Queue.user_id == user_id).all()
     
     videos = []
     
     for video in queue:
         if video.movie_id:
             
-            movie = Movies.query.filter(id==video.movie_id).first()
+            movie = db.session.query(Movies).filter(id==video.movie_id).first()
             videos.append(movie)
         if video.tv_show_id:
-            tv_show = TV_Shows.query.filter(id==video.tv_show_id).first()
+            tv_show = db.session.query(TV_Shows).filter(id==video.tv_show_id).first()
             videos.append(tv_show)
     
     if request.method == "DELETE":
         try:
             ##queue = Queue.query.filter(user_id == user_id)
             id_to_delete = request.args.id
-            video_to_delete = Queue.query.filter(id == id_to_delete)
+            video_to_delete = db.session.query(Queue).filter(id == id_to_delete)
             db.session.delete(video_to_delete)
             db.session.commit()
         except Exception as error:
@@ -167,17 +167,17 @@ def edit():
     
     if request.method=='GET':
         try:
-            country = db.session.query(Country).filter(Country.id == (db.session.query(User).filter(User.user_id == user_id).first().country_code)).first().name 
-            city = db.session.query(City).filter(City.id == (db.session.query(User).filter(User.user_id == user_id).first().city_code)).first().name
-            province = db.session.query(Province).filter(Province.id == (db.session.query(User).filter(User.user_id == user_id).first().province_code)).first().name
-            state = db.session.query(State).filter(State.id == (db.session.query(User).filter(User.user_id == user_id).first().state_code)).first().name
+            country = db.session.query(Country).filter(Country.id == (db.session.query(Users).filter(Users.user_id == user_id).first().country_code)).first() 
+            city = db.session.query(City).filter(City.id == (db.session.query(Users).filter(Users.user_id == user_id).first().city_code)).first()
+            province = db.session.query(Province).filter(Province.id == (db.session.query(Users).filter(Users.user_id == user_id).first().province_code)).first()
+            state = db.session.query(State).filter(State.id == (db.session.query(Users).filter(Users.user_id == user_id).first().state_code)).first()
             
         except Exception as error:
-            flash(error, error)
+            print(error)
     
     if request.method=='POST' and form.validate_on_submit():
         try:
-            user_info_update = db.session.query(User).get(user_id)
+            user_info_update = db.session.query(Users).get(user_id)
             props = {'first_name': form.firstName.data,
                      'last_name': form.lastName.data,
                      'email': form.email.data,
@@ -300,13 +300,11 @@ def edit():
     return render_template('users/edit.html', form=form, user = user, country=country, state=state, province=province, city = city, username = username ), 200
 
 @app.route('/friend_detail/<int:user_id>')
-def friend_detail():
+def friend_detail(user_id):
     
     """friend's details"""
     
-    user = g.user
-    
-    friend = db.session.query(User).filter(User.user_id == user_id).first()
+    friend = db.session.query(Users).filter(Users.user_id == user_id).first()
     friend_count = friend.friends.count()
     photo = friend.user_photo.first().image_url
     if photo is None:
@@ -405,7 +403,7 @@ def sign_up():
             
             flash("Registration successful!")
             
-            html_dir = '/users/' + str(user.user_id)
+            ##html_dir = '/users/' + str(user.user_id)
             
             return redirect(url_for('details', user_id = user.user_id), 302)
             
@@ -502,12 +500,12 @@ def home_page():
 
 
 @app.route('/add_friend/<int:user_id>', methods=['POST'])
-def accept_friend_request():
+def accept_friend_request(user_id):
     """accepting friend's request"""
     
     ##Used the following code for help in setting this code: https://github.com/logicfool/FlaskBook/blob/master/app.py
     
-    requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first()
+    requestor_id = Pending_Friend_Requests.query.filter(Pending_Friend_Requests.user_request_sent_from == user_id).first()
     
     new_friends = Friends(user_id_1=g.user.user_id, user_id_2=requestor_id.user_request_sent_from)
     
@@ -516,7 +514,7 @@ def accept_friend_request():
     db.session.add(new_friends)
     db.session.commit(new_friends)
     
-    delete_requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first().delete()
+    delete_requestor_id = Pending_Friend_Requests.query.filter(Pending_Friend_Requests.user_request_sent_from == user_id).first().delete()
     
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)
@@ -524,11 +522,11 @@ def accept_friend_request():
     return redirect(url_for('details', user_id = g.user.user_id), 302)
 
 @app.route('/delete_friend_request/<int:user_id>', methods=['POST'])
-def delete_friend_request():
+def delete_friend_request(user_id):
     
     """deleting friend request"""
     
-    delete_requestor_id = Pending_Friend_Requests.query.filter(user_request_sent_from == user_id).first().delete()
+    delete_requestor_id = Pending_Friend_Requests.query.filter(Pending_Friend_Requests.user_request_sent_from == user_id).first().delete()
     
     db.session.add(delete_requestor_id)
     db.session.commit(delete_requestor_id)

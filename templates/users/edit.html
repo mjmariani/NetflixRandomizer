@@ -4,108 +4,85 @@
 
 <div class="container-lg" style="overflow: visible">
 <div class="h-95 w-70 row mt-5 text-center mx-auto" id="info-tab">
-
-    <div class="col-md-9 personal-info">
+    <div class="personal-info">
         <h3>Personal info</h3>
-        
         <form class="form-horizontal" role="form" action="/edit" method="post">
           <div class="form-group">
-            <label class="col-md-3 control-label" for="firstName">First name:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="firstName">First name:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="text" value="{{user.first_name}}" name="firstName" id="firstName">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label" for="lastName">Last name:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="lastName">Last name:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="text" value="{{user.last_name}}" name="lastName" id="lastName">
             </div>
-          </div>
-          
+          </div>      
           <div class="form-group">
-            <label class="col-md-3 control-label" for="email">Email:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="email">Email:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="email" value="{{user.email}}" name="email" id="email">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label" for="picture">Picture:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="picture">Picture:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="url" value="http:// (Please Enter Image URL)" name="picture" id="picture">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label" for="country">Country:</label>
-            <div class="col-md-8">
-              <input class="form-control input-sm" type="text" value="{{user.email}}" name="country" id="country">
+            <label class="col-md-6 control-label" for="country">Country:</label>
+            <div class="col-md-12 text-center">
+              <input class="form-control input-sm" type="text" value="{{country.name}}" name="country" id="country">
             </div>
           </div>
-
           <!-- <div class="form-group">
-            <label class="col-md-3 control-label" for="address">Address:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="address">Address:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="text" value="address" name="address" id="address">
             </div>
           </div> -->
-
           <div class="form-group">
-            <label class="col-md-3 control-label" for="city">City:</label>
-            <div class="col-md-8">
-              <input class="form-control input-sm" type="text" value="{{city}}" name="city" id="city">
+            <label class="col-md-6 control-label" for="city">City:</label>
+            <div class="col-md-12 text-center">
+              <input class="form-control input-sm" type="text" value="{{city.name}}" name="city" id="city">
             </div>
           </div>
-
           <div class="form-group">
-            <label class="col-md-3 control-label" for="state">State:</label>
-            <div class="col-md-8">
-              <input class="form-control input-sm" type="text" value="{{state}}" name="state" id="state">
+            <label class="col-md-6 control-label" for="state">State:</label>
+            <div class="col-md-12 text-center">
+              <input class="form-control input-sm" type="text" value="{{state.name}}" name="state" id="state">
             </div>
           </div>
-
           <div class="form-group">
-            <label class="col-lg-3 control-label" for="province">Province:</label>
-            <div class="col-md-8">
-              <input class="form-control input-sm" type="text" value="{{province}}" name="province" id="province">
+            <label class="col-md-6 control-label" for="province">Province:</label>
+            <div class="col-md-12 text-center">
+              <input class="form-control input-sm" type="text" value="{{province.name}}" name="province" id="province">
             </div>
           </div>
-
-
           <div class="form-group">
-            <label class="col-md-3 control-label" for="username">Username:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="username">Username:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="text" value="{{username}}" name="username" id="username">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-md-3 control-label" for="password">Password:</label>
-            <div class="col-md-8">
+            <label class="col-md-6 control-label" for="password">Password:</label>
+            <div class="col-md-12 text-center">
               <input class="form-control input-sm" type="password" value="11111122333" name="password" id="password">
             </div>
           </div>
           <div class="form-group">
-            <label class="col-lg-3 control-label"></label>
-            <div class="col-lg-8">
+            <label class="col-md-6 control-label"></label>
+            <div class="col-md-12 text-center">
               <input type="submit" class="btn btn-lg btn-primary" value="Save Changes"></button>
               <span></span>
               <input type="reset" class="btn btn-lg btn-warning" value="Cancel"></button>
             </div>
           </div>
         </form>
-
-
-
     </div>
-
-
-
-
-
-
-
-
-
 </div>
 </div>
-
-
 {% endblock %}
